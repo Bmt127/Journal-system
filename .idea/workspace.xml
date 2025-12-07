@@ -68,6 +68,7 @@
       <change afterPath="$PROJECT_DIR$/user-service/src/main/java/se/kth/journal/userservice/service/UserService.java" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/user-service/src/main/resources/application.properties" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/user-service/src/test/java/se/kth/journal/userservice/UserServiceApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,7 +90,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/journal-service" />
   </component>
   <component name="GitHubPullRequestSearchHistory"><![CDATA[{
   "lastFilter": {
@@ -129,7 +130,7 @@
     "Repository.Attach.JavaDocs": "false",
     "Repository.Attach.Sources": "false",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/a3/Documents/journal-system",
     "list.type.of.created.stylesheet": "CSS",
@@ -250,7 +251,7 @@
       <workItem from="1764940859337" duration="189000" />
       <workItem from="1764941067628" duration="9000" />
       <workItem from="1764941085128" duration="548000" />
-      <workItem from="1764941642070" duration="91389000" />
+      <workItem from="1764941642070" duration="92674000" />
     </task>
     <servers />
   </component>
