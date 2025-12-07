@@ -22,3 +22,7 @@ jobs:
 
     - name: Build journal-service with Maven
       run: mvn -B package --file journal-service/pom.xml
+    - name: Build Docker image for journal-service
+      run: |
+        docker build -t journal-service:latest journal-service
+
