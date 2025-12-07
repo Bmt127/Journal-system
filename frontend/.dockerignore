@@ -1,0 +1,28 @@
+node_modules
+build
+dist
+.next
+out
+
+# Git & Docker
+.git
+.gitignore
+Dockerfile
+.dockerignore
+
+# IntelliJ/IDEA
+.idea
+*.iml
+
+# OS/editor
+.vscode
+.DS_Store
+
+# Logs/cache
+*.log
+.cache
+coverage
+
+# Env
+.env
+.env.*

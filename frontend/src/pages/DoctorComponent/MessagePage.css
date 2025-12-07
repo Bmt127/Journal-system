@@ -1,0 +1,79 @@
+.message-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: "Inter", sans-serif;
+}
+
+.message-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fafafa;
+}
+
+/* Skickade meddelanden */
+.message-item.sent {
+    align-self: flex-end;
+    background-color: #e6f7ff;
+    border-radius: 15px 15px 0 15px;
+    max-width: 75%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Mottagna meddelanden */
+.message-item.received {
+    align-self: flex-start;
+    background-color: #f1f1f1;
+    border-radius: 15px 15px 15px 0;
+    max-width: 75%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Text i bubblorna */
+.message-item p,
+.message-item .MuiTypography-root {
+    margin: 0;
+    word-wrap: break-word;
+}
+
+/* Textarea + knapp */
+.message-input {
+    width: 100%;
+    resize: none;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.send-button {
+    margin-top: 10px;
+    width: 100%;
+}
+
+/* Dropdown */
+.receiver-select {
+    margin-bottom: 15px;
+}
+
+/* Scrollbar-styling */
+.message-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.message-list::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.message-list::-webkit-scrollbar-track {
+    background: transparent;
+}

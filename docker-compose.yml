@@ -1,0 +1,81 @@
+services:
+
+  mysql:
+    image: mysql:8
+    container_name: journal-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/journal_users
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    ports:
+      - "8081:8081"
+
+  message-service:
+    build: ./message-service
+    container_name: message-service
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/messagedb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    ports:
+      - "8083:8083"
+
+  journal-service:
+    build: ./journal-service
+    container_name: journal-service
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/journaldb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    ports:
+      - "8084:8084"
+
+  search-service:
+    build: ./search-service
+    container_name: search-service
+    ports:
+      - "8082:8082"
+
+  image-service:
+    build: ./image-service
+    container_name: image-service
+    ports:
+      - "3001:3001"
+
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    depends_on:
+      - user-service
+      - journal-service
+      - message-service
+      - image-service
+      - search-service
+    ports:
+      - "5173:5173"

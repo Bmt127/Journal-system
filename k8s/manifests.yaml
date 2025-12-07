@@ -1,0 +1,360 @@
+# Namespace
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: journal-system
+
+# Secrets (DB credentials)
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-credentials
+  namespace: journal-system
+type: Opaque
+stringData:
+  MYSQL_ROOT_PASSWORD: "root"
+
+# MySQL PersistentVolumeClaim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: journal-system
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+# MySQL Deployment (FIXED WITH securityContext!)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: journal-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+      containers:
+        - name: mysql
+          image: mysql:8
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: MYSQL_ROOT_PASSWORD
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+
+# MySQL Service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: journal-system
+spec:
+  selector:
+    app: mysql
+  ports:
+    - port: 3306
+      targetPort: 3306
+
+#########################################################
+# USER SERVICE (NodePort: 30081)
+#########################################################
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: journal-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: user-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql:3306/journal_users"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "root"
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: MYSQL_ROOT_PASSWORD
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: journal-system
+spec:
+  type: NodePort
+  selector:
+    app: user-service
+  ports:
+    - port: 8081
+      targetPort: 8081
+      nodePort: 30081
+
+#########################################################
+# MESSAGE SERVICE (NodePort: 30083)
+#########################################################
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: message-service
+  namespace: journal-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: message-service
+  template:
+    metadata:
+      labels:
+        app: message-service
+    spec:
+      containers:
+        - name: message-service
+          image: message-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8083
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql:3306/messagedb"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "root"
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: MYSQL_ROOT_PASSWORD
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: message-service
+  namespace: journal-system
+spec:
+  type: NodePort
+  selector:
+    app: message-service
+  ports:
+    - port: 8083
+      targetPort: 8083
+      nodePort: 30083
+
+#########################################################
+# JOURNAL SERVICE (NodePort: 30082)
+#########################################################
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: journal-service
+  namespace: journal-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: journal-service
+  template:
+    metadata:
+      labels:
+        app: journal-service
+    spec:
+      containers:
+        - name: journal-service
+          image: journal-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8084
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql:3306/journaldb"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "root"
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: MYSQL_ROOT_PASSWORD
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: journal-service
+  namespace: journal-system
+spec:
+  type: NodePort
+  selector:
+    app: journal-service
+  ports:
+    - port: 8084
+      targetPort: 8084
+      nodePort: 30082
+
+#########################################################
+# SEARCH SERVICE (NodePort: 30084)
+#########################################################
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: search-service
+  namespace: journal-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: search-service
+  template:
+    metadata:
+      labels:
+        app: search-service
+    spec:
+      containers:
+        - name: search-service
+          image: search-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: search-service
+  namespace: journal-system
+spec:
+  type: NodePort
+  selector:
+    app: search-service
+  ports:
+    - port: 8082
+      targetPort: 8082
+      nodePort: 30084
+
+#########################################################
+# IMAGE SERVICE (NodePort: 30085)
+#########################################################
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-service
+  namespace: journal-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: image-service
+  template:
+    metadata:
+      labels:
+        app: image-service
+    spec:
+      containers:
+        - name: image-service
+          image: image-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3001
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: image-service
+  namespace: journal-system
+spec:
+  type: NodePort
+  selector:
+    app: image-service
+  ports:
+    - port: 3001
+      targetPort: 3001
+      nodePort: 30085
+
+#########################################################
+# FRONTEND (ClusterIP – port-forwardas)
+#########################################################
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: journal-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5173
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: journal-system
+spec:
+  type: ClusterIP
+  selector:
+    app: frontend
+  ports:
+    - port: 5173
+      targetPort: 5173

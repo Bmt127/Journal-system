@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5af4467c-128c-45d6-b701-b164fa3efa4c" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/image-service/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/.gitattributes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/mvnw" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/mvnw.cmd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/JournalServiceApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/config/CorsConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/controller/ConditionController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/controller/EncounterController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/controller/ObservationController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/controller/PatientController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/controller/PractitionerController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/dto/CreateObservationRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/dto/CreatePatientRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/dto/PractitionerRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/entity/Condition.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/entity/Encounter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/entity/Observation.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/entity/Patient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/entity/Practitioner.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/repository/ConditionRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/repository/EncounterRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/repository/ObservationRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/repository/PatientRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/repository/PractitionerRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/service/ConditionService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/service/EncounterService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/service/PatientService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/java/se/kth/journal/journalservice/service/PractitionerService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/journal-service/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/message-service/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/message-service/src/main/java/se/kth/journal/messageservice/config/CorsConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/message-service/src/main/java/se/kth/journal/messageservice/controller/MessageController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/message-service/src/main/java/se/kth/journal/messageservice/dto/MessageCreateDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/message-service/src/main/java/se/kth/journal/messageservice/dto/MessageDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/message-service/src/main/java/se/kth/journal/messageservice/dto/MessageMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/message-service/src/main/java/se/kth/journal/messageservice/entity/Message.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/message-service/src/main/java/se/kth/journal/messageservice/repository/MessageRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/message-service/src/main/java/se/kth/journal/messageservice/service/MessageService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/.gitattributes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/mvnw" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/mvnw.cmd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/se/kth/journal/userservice/UserServiceApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/se/kth/journal/userservice/config/CorsConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/se/kth/journal/userservice/config/RestTemplateConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/se/kth/journal/userservice/controller/UserController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/se/kth/journal/userservice/dto/LoginRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/se/kth/journal/userservice/dto/UserCreateDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/se/kth/journal/userservice/dto/UserDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/se/kth/journal/userservice/dto/UserMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/se/kth/journal/userservice/entity/Role.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/se/kth/journal/userservice/entity/User.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/se/kth/journal/userservice/repository/UserRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/se/kth/journal/userservice/service/UserService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user-service/src/test/java/se/kth/journal/userservice/UserServiceApplicationTests.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Dockerfile" />
+        <option value="Interface" />
+        <option value="package-info" />
+        <option value="Class" />
+        <option value="JavaScript File" />
+        <option value="JSX File" />
+        <option value="CSS File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Bmt127"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Bmt127/Journal-system.git",
+    "accountId": "bcc6ddd8-c4c8-4b75-bba7-7cdc903bd98f"
+  }
+}]]></component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="36QIHTpD0TSjvdGExdEpSd2MTnz" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Downloaded.Files.Path.Enabled": "false",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/a3/Documents/journal-system",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15527344",
+    "project.structure.side.proportion": "0.48735633",
+    "run.configurations.included.in.services": "true",
+    "settings.editor.selected.configurable": "configurable.group.tools",
+    "ts.external.directory.path": "/Users/a3/Applications/IntelliJ IDEA Ultimate.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/frontend/src/pages" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="KtorApplicationConfigurationType" />
+        <option value="MicronautRunConfigurationType" />
+        <option value="QuarkusRunConfigurationType" />
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
+  </component>
+  <component name="RunManager" selected="Spring Boot.JournalServiceApplication">
+    <configuration name="search-service" type="QuarkusRunConfigurationType" factoryName="Quarkus" nameIsGenerated="true">
+      <module name="search-service" />
+      <QsMavenRunConfiguration>
+        <MavenSettings>
+          <option name="myGeneralSettings" />
+          <option name="myRunnerSettings" />
+          <option name="myRunnerParameters">
+            <MavenRunnerParameters>
+              <option name="cmdOptions" />
+              <option name="profiles">
+                <set />
+              </option>
+              <option name="goals">
+                <list>
+                  <option value="quarkus:dev" />
+                </list>
+              </option>
+              <option name="multimoduleDir" />
+              <option name="pomFileName" value="pom.xml" />
+              <option name="profilesMap">
+                <map />
+              </option>
+              <option name="projectsCmdOptionValues">
+                <list />
+              </option>
+              <option name="resolveToWorkspace" value="false" />
+              <option name="workingDirPath" value="$PROJECT_DIR$/search-service" />
+            </MavenRunnerParameters>
+          </option>
+        </MavenSettings>
+        <targetMavenLocalRepo />
+        <emulateTerminal>true</emulateTerminal>
+        <profile>dev</profile>
+      </QsMavenRunConfiguration>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="JournalServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="journal-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="se.kth.journal.journalservice.JournalServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MessageServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="message-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="se.kth.journal.messageservice.MessageServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UserServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="user-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="se.kth.journal.userservice.UserServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fdfe4dae3a2d-intellij.indexing.shared.core-IU-243.21565.193" />
+        <option value="bundled-js-predefined-d6986cc7102b-e768b9ed790e-JavaScript-IU-243.21565.193" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5af4467c-128c-45d6-b701-b164fa3efa4c" name="Changes" comment="" />
+      <created>1764932280754</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1764932280754</updated>
+      <workItem from="1764932282061" duration="2000" />
+      <workItem from="1764932855978" duration="139000" />
+      <workItem from="1764933058500" duration="1994000" />
+      <workItem from="1764935078898" duration="5550000" />
+      <workItem from="1764940663158" duration="164000" />
+      <workItem from="1764940859337" duration="189000" />
+      <workItem from="1764941067628" duration="9000" />
+      <workItem from="1764941085128" duration="548000" />
+      <workItem from="1764941642070" duration="91123000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-field">
+          <url>file://$PROJECT_DIR$/user-service/src/main/java/se/kth/journal/userservice/entity/User.java</url>
+          <line>17</line>
+          <properties field="email" class="se.kth.journal.userservice.entity.User" />
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

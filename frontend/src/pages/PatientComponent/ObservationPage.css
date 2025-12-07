@@ -1,0 +1,26 @@
+.observation-container {
+    padding: 24px;
+}
+
+.observation-title {
+    margin-bottom: 24px;
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.observation-dropdown {
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+.observation-card {
+    padding: 24px;
+    border-radius: 12px;
+    background-color: #fafafa;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.observation-card h6 {
+    margin-bottom: 16px;
+    font-weight: 600;
+}

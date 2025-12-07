@@ -1,0 +1,28 @@
+.search-container {
+    padding: 20px;
+}
+
+.search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search-result-card {
+    padding: 15px;
+    margin: 10px 0;
+}
+
+.practitioner-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.patient-result-section {
+    margin-top: 20px;
+}
+
+.active {
+    border: 2px solid #1976d2;
+}
