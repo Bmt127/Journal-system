@@ -16,7 +16,6 @@ app.use(cors({
 
 app.use(express.json());
 
-// Path setup
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -26,7 +25,6 @@ const editsDir = path.join(__dirname, "edits");
 if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir);
 if (!fs.existsSync(editsDir)) fs.mkdirSync(editsDir);
 
-// MULTER STORAGE WITH EXT
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, imagesDir),
     filename: (req, file, cb) => {

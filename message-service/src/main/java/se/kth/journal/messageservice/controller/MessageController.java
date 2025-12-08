@@ -3,17 +3,19 @@ package se.kth.journal.messageservice.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import se.kth.journal.messageservice.dto.*;
+import se.kth.journal.messageservice.service.MessageProducer;
 import se.kth.journal.messageservice.service.MessageService;
 
 import java.util.List;
-
+import org.springframework.kafka.core.KafkaTemplate;
 @RestController
 @RequestMapping("/messages")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")   // <-- LÄGG TILL DENNA
+@CrossOrigin(origins = "*")
 public class MessageController {
 
     private final MessageService messageService;
+    private final MessageProducer messageProducer;
 
     @GetMapping
     public List<MessageDTO> all() {
@@ -22,7 +24,12 @@ public class MessageController {
 
     @PostMapping
     public MessageDTO create(@RequestBody MessageCreateDTO dto) {
-        return messageService.create(dto);
+
+        MessageDTO saved = messageService.create(dto);
+
+        messageProducer.sendMessage("New message created with ID " + saved.getId());
+
+        return saved;
     }
 
     @GetMapping("/sender/{id}")

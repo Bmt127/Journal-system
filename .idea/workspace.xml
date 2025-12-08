@@ -22,8 +22,8 @@
         <option value="package-info" />
         <option value="CSS File" />
         <option value="JSX File" />
-        <option value="Class" />
         <option value="JavaScript File" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -193,7 +193,7 @@
       <workItem from="1764941085128" duration="548000" />
       <workItem from="1764941642070" duration="92674000" />
       <workItem from="1765136222646" duration="21704000" />
-      <workItem from="1765159129124" duration="4228000" />
+      <workItem from="1765159129124" duration="8303000" />
     </task>
     <servers />
   </component>

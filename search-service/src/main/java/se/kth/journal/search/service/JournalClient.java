@@ -1,36 +1,28 @@
 package se.kth.journal.search.service;
-
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import jakarta.enterprise.context.Dependent;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
+import io.smallrye.mutiny.Uni;
 
-@Dependent
-@RegisterRestClient(configKey = "journal-client")
-@Path("/")
-@Produces(MediaType.APPLICATION_JSON)
+@RegisterRestClient
 public interface JournalClient {
 
     @GET
     @Path("/patients")
-    String getAllPatients();
+    Uni<String> getAllPatients();
 
     @GET
-    @Path("/patients/{id}")
-    String getPatient(@PathParam("id") Long id);
-
-    @GET
-    @Path("/conditions/patient/{id}")
-    String getConditionsByPatient(@PathParam("id") Long patientId);
+    @Path("/patients/{id}/conditions")
+    Uni<String> getConditionsByPatient(@PathParam("id") Long id);
 
     @GET
     @Path("/practitioners")
-    String getAllPractitioners();
+    Uni<String> getAllPractitioners();
 
     @GET
-    @Path("/encounters/practitioner/{id}")
-    String getEncountersByPractitioner(
-            @PathParam("id") Long practitionerId,
-            @QueryParam("date") String date
-    );
+    @Path("/practitioners/{id}/encounters")
+    Uni<String> getEncountersByPractitioner(@PathParam("id") Long id,
+                                            @QueryParam("date") String date);
 }

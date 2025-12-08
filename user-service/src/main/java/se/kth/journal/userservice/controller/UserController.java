@@ -35,7 +35,6 @@ public class UserController {
         return userService.get(id);
     }
 
-    // NEW LOGIN ENDPOINT
     @PostMapping("/login")
     public UserDTO login(@RequestBody LoginRequest request) {
         return userService.login(request.getUsername(), request.getPassword());

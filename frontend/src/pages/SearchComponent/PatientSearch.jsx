@@ -23,10 +23,8 @@ export default function PatientSearch() {
         try {
             const res = await searchApi.get(`/search/patients?query=${encodeURIComponent(query)}`);
 
-            // Om backend returnerar ett objekt (ej array) -> supporta det defensivt
             const data = Array.isArray(res.data) ? res.data : (res.data ? [res.data] : []);
 
-            // KORREKT MAPPNING MOT BACKEND (DTO med firstName,lastName,email)
             const mapped = data.map(p => ({
                 id: p.id,
                 givenName: p.firstName || p.username || "",

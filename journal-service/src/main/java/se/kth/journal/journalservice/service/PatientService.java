@@ -40,7 +40,6 @@ public class PatientService {
         return repo.save(p);
     }
 
-    // används bara som fallback om du skulle vilja
     public Patient createPatient(Long userId, String username, String email) {
 
         Patient p = Patient.builder()

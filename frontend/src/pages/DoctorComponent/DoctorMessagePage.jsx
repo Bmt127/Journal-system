@@ -29,7 +29,6 @@ export default function DoctorMessagePage() {
             .catch(err => console.error("Kunde inte hämta användare:", err));
     }, []);
 
-    // Unified conversation loader
     const loadConversation = useCallback(async (otherUserId) => {
         if (!otherUserId) {
             setConversation([]);
@@ -57,7 +56,6 @@ export default function DoctorMessagePage() {
         }
     }, [userId]);
 
-    // Load conversation when user changes
     useEffect(() => {
         loadConversation(selectedUserId);
     }, [selectedUserId, loadConversation]);
@@ -74,7 +72,7 @@ export default function DoctorMessagePage() {
             await messageApi.post("/messages", {
                 senderId: userId,
                 receiverId: Number(selectedUserId),
-                content: content.trim() // FIXED
+                content: content.trim()
             });
 
             setContent("");

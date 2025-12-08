@@ -34,9 +34,7 @@ public class EncounterController {
                 );
     }
 
-    // ======================================================
-    // ✔ FIXED ENDPOINT SO IT MATCHES SEARCH-SERVICE EXPECTATION
-    // ======================================================
+
     @GetMapping("/practitioner/{practitionerId}")
     public ResponseEntity<?> getByPractitioner(
             @PathVariable Long practitionerId,

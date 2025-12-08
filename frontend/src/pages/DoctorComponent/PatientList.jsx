@@ -20,7 +20,6 @@ export default function PatientList() {
     const [severity, setSeverity] = useState("");
     const [onsetDate, setOnsetDate] = useState("");
 
-    // FETCH ALL PATIENTS
     useEffect(() => {
         journalApi.get("/patients")
             .then(res => {
@@ -34,7 +33,6 @@ export default function PatientList() {
             .catch(() => setError("Kunde inte hämta patienter"));
     }, []);
 
-    // FETCH SELECTED PATIENT
     useEffect(() => {
         if (!selectedId) {
             setSelectedPatient(null);
@@ -73,7 +71,6 @@ export default function PatientList() {
         }
     };
 
-    // ADD CONDITION (MATCHAR BACKEND)
     const handleAddDiagnosis = async () => {
         if (!description || !severity || !onsetDate) {
             alert("Fyll i alla obligatoriska fält.");

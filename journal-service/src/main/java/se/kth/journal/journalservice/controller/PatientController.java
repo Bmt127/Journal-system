@@ -37,9 +37,7 @@ public class PatientController {
     }
 
 
-    // ============================================================
-    // CREATE PATIENT (USED BY USER-SERVICE)
-    // ============================================================
+
     @PostMapping
     public ResponseEntity<?> createPatient(@RequestBody Map<String, Object> payload) {
 
@@ -48,7 +46,6 @@ public class PatientController {
             String username = payload.getOrDefault("username", "").toString();
             String email = payload.getOrDefault("email", "").toString();
 
-            // Extract first/last name from username (important for SEARCH)
             String[] parts = username.trim().split(" ");
             String firstName = parts.length > 0 ? parts[0] : "";
             String lastName = parts.length > 1 ? parts[1] : "";

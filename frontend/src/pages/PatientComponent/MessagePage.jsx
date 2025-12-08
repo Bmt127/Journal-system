@@ -23,7 +23,6 @@ export default function MessagePage() {
     const userId = Number(localStorage.getItem("userId"));
     const messagesEndRef = useRef(null);
 
-    // Hämta alla användare (för dropdown)
     useEffect(() => {
         const loadUsers = async () => {
             try {
@@ -38,7 +37,6 @@ export default function MessagePage() {
         loadUsers();
     }, []);
 
-    // Laddar konversationen (både skickade och mottagna)
     const loadConversation = useCallback(async (otherId) => {
         if (!otherId) {
             setConversation([]);
@@ -54,7 +52,6 @@ export default function MessagePage() {
 
             const combined = [...(sentRes.data || []), ...(recvRes.data || [])];
 
-            // Filtrera ut endast meddelanden som rör selected user (antingen sender eller receiver)
             const conv = combined
                 .filter(m =>
                     Number(m.senderId) === Number(otherId) ||
@@ -69,13 +66,11 @@ export default function MessagePage() {
         }
     }, [userId]);
 
-    // Kör när selectedUserId byter
     useEffect(() => {
         if (!selectedUserId) return;
         loadConversation(selectedUserId);
     }, [selectedUserId, loadConversation]);
 
-    // Scrolla till botten när conversation uppdateras
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [conversation]);

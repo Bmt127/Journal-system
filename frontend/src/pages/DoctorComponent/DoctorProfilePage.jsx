@@ -29,7 +29,6 @@ export default function DoctorProfilePage() {
                     return;
                 }
 
-                // 2. Hämta practitioner
                 const pr = await journalApi.get(`/practitioners/${practitionerId}`);
                 const p = pr.data;
 

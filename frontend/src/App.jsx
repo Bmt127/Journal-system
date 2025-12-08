@@ -23,7 +23,6 @@ import StaffMessages from "./pages/StaffComponent/StaffMessages";
 import PatientSearch from "./pages/SearchComponent/PatientSearch";
 import PractitionerSearch from "./pages/SearchComponent/PractitionerSearch";
 
-// Image handling page
 import ImageComponent from "./pages/ImageComponent/ImageComponent";
 
 function App() {

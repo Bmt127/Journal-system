@@ -54,7 +54,6 @@ public class UserService {
     }
 
 
-    // CREATE USER + CREATE PATIENT OR PRACTITIONER IN JOURNAL-SERVICE
     public UserDTO create(UserCreateDTO dto) {
 
         User user = new User();
@@ -83,7 +82,6 @@ public class UserService {
                 }
             }
 
-            // ------------ DOCTOR / STAFF → PRACTITIONER ------------
             else {
                 String url = journalBaseUrl + "/practitioners";
                 Map response = restTemplate.postForObject(url, request, Map.class);

@@ -54,7 +54,6 @@ export default function StaffPatientList() {
             .catch(() => setError("Kunde inte hämta patient"));
     }, [selectedId]);
 
-    // ADD NOTE — exakt som doctor-versionen
     const handleAddNote = async () => {
         if (!note.trim()) return alert("Skriv en notering.");
         if (!selectedId) return alert("Ingen patient vald.");
@@ -73,7 +72,6 @@ export default function StaffPatientList() {
         }
     };
 
-    // ADD CONDITION — exakt som doctor-versionen
     const handleAddDiagnosis = async () => {
         if (!description || !severity || !onsetDate) {
             alert("Fyll i alla obligatoriska fält.");
