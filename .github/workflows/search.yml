@@ -1,0 +1,32 @@
+name: search-ci
+
+on:
+  push:
+    paths:
+      - "search-service/**"
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to KTH Cloud Registry
+        uses: docker/login-action@v3
+        with:
+          registry: registry.cloud.cbh.kth.se
+          username: ${{ secrets.SEARCH_ROBOT_USER }}
+          password: ${{ secrets.SEARCH_ROBOT_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./search-service
+          file: ./search-service/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: registry.cloud.cbh.kth.se/deploy-941d48d5-fec5-4da7-8181-72ab9f09a5fa/search-rapid-spark:latest
