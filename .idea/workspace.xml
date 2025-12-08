@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5af4467c-128c-45d6-b701-b164fa3efa4c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/k8s/manifests.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/k8s/manifests.yaml" afterDir="false" />
-    </list>
+    <list default="true" id="5af4467c-128c-45d6-b701-b164fa3efa4c" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -193,7 +190,7 @@
       <workItem from="1764941085128" duration="548000" />
       <workItem from="1764941642070" duration="92674000" />
       <workItem from="1765136222646" duration="21704000" />
-      <workItem from="1765159129124" duration="8303000" />
+      <workItem from="1765159129124" duration="16386000" />
     </task>
     <servers />
   </component>
@@ -208,6 +205,12 @@
           <line>17</line>
           <properties field="email" class="se.kth.journal.userservice.entity.User" />
           <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/frontend/src/App.jsx</url>
+          <line>4</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
