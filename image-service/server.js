@@ -14,6 +14,11 @@ app.use(cors({
     methods: ["GET", "POST"]
 }));
 
+app.get("/", (req, res) => {
+    res.send("Image-service OK");
+});
+
+
 app.use(express.json());
 
 const __filename = fileURLToPath(import.meta.url);
