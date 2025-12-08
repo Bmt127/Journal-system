@@ -26,7 +26,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./search-service
-          file: ./search-service/Dockerfile
+          file: ./search-service/Dockerfile.cloud
           platforms: linux/amd64
           push: true
           tags: registry.cloud.cbh.kth.se/deploy-941d48d5-fec5-4da7-8181-72ab9f09a5fa/search-rapid-spark:latest

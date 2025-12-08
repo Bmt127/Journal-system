@@ -2,7 +2,9 @@
 
 mkdir -p .github/workflows
 
-# Journal-service
+##############################################
+# JOURNAL-SERVICE
+##############################################
 cat > .github/workflows/journal.yml << 'EOF'
 name: journal-ci
 
@@ -32,14 +34,15 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./journal-service
-          file: ./journal-service/Dockerfile
+          file: ./journal-service/Dockerfile.cloud
           platforms: linux/amd64
           push: true
           tags: registry.cloud.cbh.kth.se/deploy-941d48d5-fec5-4da7-8181-72ab9f09a5fa/journal-silent-echo:latest
 EOF
 
-
-# User-service
+##############################################
+# USER-SERVICE
+##############################################
 cat > .github/workflows/user.yml << 'EOF'
 name: user-ci
 
@@ -69,14 +72,15 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./user-service
-          file: ./user-service/Dockerfile
+          file: ./user-service/Dockerfile.cloud
           platforms: linux/amd64
           push: true
           tags: registry.cloud.cbh.kth.se/deploy-941d48d5-fec5-4da7-8181-72ab9f09a5fa/user-hidden-arc:latest
 EOF
 
-
-# Search-service
+##############################################
+# SEARCH-SERVICE
+##############################################
 cat > .github/workflows/search.yml << 'EOF'
 name: search-ci
 
@@ -106,14 +110,15 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./search-service
-          file: ./search-service/Dockerfile
+          file: ./search-service/Dockerfile.cloud
           platforms: linux/amd64
           push: true
           tags: registry.cloud.cbh.kth.se/deploy-941d48d5-fec5-4da7-8181-72ab9f09a5fa/search-rapid-spark:latest
 EOF
 
-
-# Message-service
+##############################################
+# MESSAGE-SERVICE
+##############################################
 cat > .github/workflows/message.yml << 'EOF'
 name: message-ci
 
@@ -143,14 +148,15 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./message-service
-          file: ./message-service/Dockerfile
+          file: ./message-service/Dockerfile.cloud
           platforms: linux/amd64
           push: true
           tags: registry.cloud.cbh.kth.se/deploy-941d48d5-fec5-4da7-8181-72ab9f09a5fa/message-velvet-stream:latest
 EOF
 
-
-# Image-service
+##############################################
+# IMAGE-SERVICE
+##############################################
 cat > .github/workflows/image.yml << 'EOF'
 name: image-ci
 
@@ -180,14 +186,15 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./image-service
-          file: ./image-service/Dockerfile
+          file: ./image-service/Dockerfile.cloud
           platforms: linux/amd64
           push: true
           tags: registry.cloud.cbh.kth.se/deploy-941d48d5-fec5-4da7-8181-72ab9f09a5fa/image-dawn-lattice:latest
 EOF
 
-
-# Frontend
+##############################################
+# FRONTEND
+##############################################
 cat > .github/workflows/frontend.yml << 'EOF'
 name: frontend-ci
 
@@ -217,11 +224,10 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
-          file: ./frontend/Dockerfile
+          file: ./frontend/Dockerfile.cloud
           platforms: linux/amd64
           push: true
           tags: registry.cloud.cbh.kth.se/deploy-941d48d5-fec5-4da7-8181-72ab9f09a5fa/frontend-lucid-garden:latest
 EOF
 
-echo "a	lla workflows är skapade i .github/workflows/"
-
+echo "Alla workflows är skapade i .github/workflows/"
