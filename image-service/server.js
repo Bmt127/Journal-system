@@ -10,7 +10,7 @@ const app = express();
 
 // CORS
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "*",
     methods: ["GET", "POST"]
 }));
 
@@ -77,4 +77,5 @@ app.post("/edit", async (req, res) => {
     }
 });
 
-app.listen(3001, () => console.log("Image service running on port 3001"));
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => console.log("Image service running on port " + PORT));
