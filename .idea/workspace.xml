@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5af4467c-128c-45d6-b701-b164fa3efa4c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/create-workflows.sh" beforeDir="false" afterPath="$PROJECT_DIR$/create-workflows.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-service/Dockerfile.cloud" beforeDir="false" afterPath="$PROJECT_DIR$/image-service/Dockerfile.cloud" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -192,7 +192,7 @@
       <workItem from="1764941085128" duration="548000" />
       <workItem from="1764941642070" duration="92674000" />
       <workItem from="1765136222646" duration="21704000" />
-      <workItem from="1765159129124" duration="20683000" />
+      <workItem from="1765159129124" duration="20891000" />
     </task>
     <servers />
   </component>
