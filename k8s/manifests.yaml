@@ -26,9 +26,11 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: hostpath
   resources:
     requests:
       storage: 2Gi
+
 
 # MySQL Deployment (FIXED WITH securityContext!)
 ---
@@ -358,3 +360,6 @@ spec:
   ports:
     - port: 5173
       targetPort: 5173
+
+
+
