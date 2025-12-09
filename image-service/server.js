@@ -14,8 +14,8 @@ app.use(cors({
     methods: ["GET", "POST"]
 }));
 
-app.get("/", (req, res) => {
-    res.send("Image-service OK");
+app.get("/healthz", (req, res) => {
+    res.status(200).send("OK");
 });
 
 
