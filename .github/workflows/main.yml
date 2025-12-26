@@ -17,9 +17,13 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # Vi bygger nu utan att köra eller kompilera tester för att undvika Lombok-fel i CI
-      - name: Build with Maven
-        run: mvn clean install -Dmaven.test.skip=true
+      # Vi bygger varje tjänst för sig eftersom du inte har en huvud-POM
+      - name: Build All Services
+        run: |
+          for service in user-service journal-service message-service search-service; do
+            echo "Bygger $service..."
+            mvn -f $service/pom.xml clean install -Dmaven.test.skip=true
+          done
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -42,5 +46,6 @@ jobs:
 
       - name: Deploy
         run: |
+          # Vi kör kubectl apply från rotmappen där k8s-mappen ligger
           kubectl apply -f k8s/manifests.yaml
           kubectl rollout restart deployment -n journal-system
