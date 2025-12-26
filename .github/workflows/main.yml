@@ -1,11 +1,11 @@
-name: Lab 3 Full Pipeline
+name: kthcloud-ci
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  test-build-deploy:
+  docker:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,34 +17,22 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # Vi använder -Dmaven.test.skip=true för att helt ignorera kompilering av trasiga tester
       - name: Build All Services
         run: |
           for service in user-service journal-service message-service search-service; do
-            echo "Bygger $service..."
             mvn -f $service/pom.xml clean install -Dmaven.test.skip=true
           done
 
-      - name: Login to Docker Hub
+      - name: Login to KTH Registry
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_HUB_USER }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+          registry: registry.cloud.cbh.kth.se
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push Docker Images
-        run: |
-          services=("user-service" "journal-service" "message-service" "search-service" "image-service" "frontend")
-          for service in "${services[@]}"; do
-            docker build -t ${{ secrets.DOCKER_HUB_USER }}/$service:latest ./$service
-            docker push ${{ secrets.DOCKER_HUB_USER }}/$service:latest
-          done
-
-      - name: Set up Kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG_KTH }}" > ~/.kube/config
-
-      - name: Deploy
-        run: |
-          kubectl apply -f k8s/manifests.yaml
-          kubectl rollout restart deployment -n journal-system
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_TAG }}
