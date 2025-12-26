@@ -13,11 +13,11 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
           cache: maven
 
-      # Vi bygger varje tjänst för sig eftersom du inte har en huvud-POM
+      # Nu bygger vi med Java 21 stöd
       - name: Build All Services
         run: |
           for service in user-service journal-service message-service search-service; do
@@ -46,6 +46,5 @@ jobs:
 
       - name: Deploy
         run: |
-          # Vi kör kubectl apply från rotmappen där k8s-mappen ligger
           kubectl apply -f k8s/manifests.yaml
           kubectl rollout restart deployment -n journal-system
