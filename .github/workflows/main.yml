@@ -17,7 +17,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build All Services
+      - name: Build with Maven
         run: |
           for service in user-service journal-service message-service search-service; do
             mvn -f $service/pom.xml clean install -Dmaven.test.skip=true
@@ -34,5 +34,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          # Här pekar vi ut var Docker-filen faktiskt ligger
+          file: user-service/Dockerfile 
           push: true
           tags: ${{ secrets.DOCKER_TAG }}
