@@ -20,6 +20,11 @@ public class MessageController {
         return messageService.getAll();
     }
 
+    @GetMapping("/")
+    public String ok() {
+        return "OK";
+    }
+
     @PostMapping
     public MessageDTO create(@RequestBody MessageCreateDTO dto) {
         return messageService.create(dto);
