@@ -55,6 +55,11 @@
 			<version>1.18.30</version>
 			<optional>true</optional>
 		</dependency>
+		<!-- Actuator for health check -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
 
 		<!-- Spring test (we will skip tests so it's fine) -->
 		<dependency>
