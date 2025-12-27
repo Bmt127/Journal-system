@@ -10,7 +10,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/messages")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")   // <-- LÄGG TILL DENNA
+@CrossOrigin(origins = "*")
 public class MessageController {
 
     private final MessageService messageService;
