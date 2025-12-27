@@ -6,67 +6,51 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
-  test:
+  test-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
 
-      - run: cd journal-service && ./mvnw test
-      - run: cd user-service && ./mvnw test
-      - run: cd message-service && ./mvnw test
-      - run: cd search-service && ./mvnw test
+      # ===== TESTER (KRAV I LAB 3) =====
+      - name: Test journal-service
+        run: cd journal-service && ./mvnw test
 
-  build-push:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - uses: actions/checkout@v4
+      - name: Test user-service
+        run: cd user-service && ./mvnw test
 
-      - name: Login to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: \${{ github.actor }}
-          password: \${{ secrets.GITHUB_TOKEN }}
+      - name: Test message-service
+        run: cd message-service && ./mvnw test
 
-      - name: Build and push images
+      - name: Test search-service
+        run: cd search-service && ./mvnw test
+
+      # ===== BYGG IMAGES (UTAN REGISTRY) =====
+      - name: Build Docker images
         run: |
-          docker build -t ghcr.io/bmt127/journal-service ./journal-service
-          docker push ghcr.io/bmt127/journal-service
+          docker build -t journal-service ./journal-service
+          docker build -t user-service ./user-service
+          docker build -t message-service ./message-service
+          docker build -t search-service ./search-service
+          docker build -t image-service ./image-service
+          docker build -t frontend ./frontend
 
-          docker build -t ghcr.io/bmt127/user-service ./user-service
-          docker push ghcr.io/bmt127/user-service
+      # ===== DEPLOY TILL KUBERNETES =====
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
 
-          docker build -t ghcr.io/bmt127/message-service ./message-service
-          docker push ghcr.io/bmt127/message-service
-
-          docker build -t ghcr.io/bmt127/search-service ./search-service
-          docker push ghcr.io/bmt127/search-service
-
-          docker build -t ghcr.io/bmt127/image-service ./image-service
-          docker push ghcr.io/bmt127/image-service
-
-          docker build -t ghcr.io/bmt127/frontend ./frontend
-          docker push ghcr.io/bmt127/frontend
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build-push
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: azure/setup-kubectl@v3
-
-      - run: |
+      - name: Configure kubeconfig
+        run: |
           mkdir -p ~/.kube
           echo "\${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
 
-      - run: kubectl apply -f k8s/manifests.yaml
+      - name: Deploy to Kubernetes
+        run: kubectl apply -f k8s/manifests.yaml
