@@ -8,70 +8,122 @@ import { fileURLToPath } from "url";
 
 const app = express();
 
-// CORS
+/* =========================
+   CONFIG
+========================= */
+const PORT = process.env.PORT || 8080;
+
+/* =========================
+   MIDDLEWARE
+========================= */
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "*",
     methods: ["GET", "POST"]
 }));
 
 app.use(express.json());
 
-// Path setup
+/* =========================
+   PATH SETUP
+========================= */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const imagesDir = path.join(__dirname, "images");
 const editsDir = path.join(__dirname, "edits");
 
-if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir);
-if (!fs.existsSync(editsDir)) fs.mkdirSync(editsDir);
+fs.mkdirSync(imagesDir, { recursive: true });
+fs.mkdirSync(editsDir, { recursive: true });
 
-// MULTER STORAGE WITH EXT
+/* =========================
+   HEALTH CHECK (REQUIRED)
+========================= */
+app.get("/healthz", (req, res) => {
+    res.status(200).send("OK");
+});
+
+/* =========================
+   MULTER STORAGE
+========================= */
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, imagesDir),
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname);
-        const unique = Date.now() + "-" + Math.round(Math.random() * 1E9);
+        const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
         cb(null, unique + ext);
     }
 });
 
 const upload = multer({ storage });
 
-// Upload route
+/* =========================
+   ROUTES
+========================= */
+
+// Upload image
 app.post("/upload", upload.single("image"), (req, res) => {
-    res.json({ filename: req.file.filename });
+    if (!req.file) {
+        return res.status(400).json({ error: "No image uploaded" });
+    }
+
+    res.json({
+        filename: req.file.filename,
+        url: `/image/${req.file.filename}`
+    });
 });
 
 // Serve original images
 app.get("/image/:filename", (req, res) => {
-    res.sendFile(path.join(imagesDir, req.params.filename));
+    const filePath = path.join(imagesDir, req.params.filename);
+
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: "Image not found" });
+    }
+
+    res.sendFile(filePath);
 });
 
-// Serve edited images (**FIX HERE**)
+// Serve edited images
 app.get("/edit-image/:filename", (req, res) => {
-    res.sendFile(path.join(editsDir, req.params.filename));
+    const filePath = path.join(editsDir, req.params.filename);
+
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: "Edited image not found" });
+    }
+
+    res.sendFile(filePath);
 });
 
-// Edit logic
+// Edit image (add text)
 app.post("/edit", async (req, res) => {
     try {
         const { filename, text } = req.body;
+
+        if (!filename || !text) {
+            return res.status(400).json({ error: "filename and text required" });
+        }
 
         const ext = path.extname(filename);
         const base = path.basename(filename, ext);
         const editedName = `edited_${base}${ext}`;
 
-        const imgPath = path.join(imagesDir, filename);
+        const inputPath = path.join(imagesDir, filename);
         const outputPath = path.join(editsDir, editedName);
 
-        const image = await Jimp.read(imgPath);
+        if (!fs.existsSync(inputPath)) {
+            return res.status(404).json({ error: "Original image not found" });
+        }
+
+        const image = await Jimp.read(inputPath);
         const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
 
         image.print(font, 10, 10, text);
         await image.writeAsync(outputPath);
 
-        res.json({ edited: editedName });
+        res.json({
+            edited: editedName,
+            url: `/edit-image/${editedName}`
+        });
 
     } catch (err) {
         console.error("EDIT ERROR:", err);
@@ -79,4 +131,9 @@ app.post("/edit", async (req, res) => {
     }
 });
 
-app.listen(3001, () => console.log("Image service running on port 3001"));
+/* =========================
+   START SERVER
+========================= */
+app.listen(PORT, () => {
+    console.log(`Image service running on port ${PORT}`);
+});
