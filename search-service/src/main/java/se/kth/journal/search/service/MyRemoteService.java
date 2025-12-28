@@ -24,7 +24,9 @@ import io.smallrye.mutiny.infrastructure.Infrastructure;
 public class MyRemoteService {
 
     private static final Logger LOG = Logger.getLogger(MyRemoteService.class);
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    @Inject
+    ObjectMapper mapper;
 
     @Inject
     @RestClient
@@ -37,9 +39,11 @@ public class MyRemoteService {
         return Uni.createFrom().item(() -> {
             try {
                 String json = journalClient.getAllPatients();
+                JsonNode arr = mapper.readTree(json);
 
-                JsonNode arr = MAPPER.readTree(json);
-                if (!arr.isArray()) return List.of();
+                if (arr == null || !arr.isArray()) {
+                    return List.<PatientDTO>of();
+                }
 
                 String q = query == null ? "" : query.toLowerCase();
                 List<PatientDTO> out = new ArrayList<>();
@@ -57,11 +61,12 @@ public class MyRemoteService {
                         out.add(new PatientDTO(id, first, last, email));
                     }
                 }
+
                 return out;
 
             } catch (Exception e) {
                 LOG.error("searchPatientsByName failed", e);
-                return List.of();
+                return List.<PatientDTO>of();
             }
         }).runSubscriptionOn(Infrastructure.getDefaultWorkerPool());
     }
@@ -71,27 +76,34 @@ public class MyRemoteService {
     // ----------------------------
     public Uni<List<PatientDTO>> searchPatientsByCondition(String condition) {
         if (condition == null || condition.isBlank()) {
-            return Uni.createFrom().item(List.of());
+            return Uni.createFrom().item(List.<PatientDTO>of());
         }
 
         String q = condition.toLowerCase();
 
         return searchPatientsByName("")
                 .map(patients ->
-                        patients.stream().filter(p -> {
-                            try {
-                                String condJson = journalClient.getConditionsByPatient(p.id);
-                                JsonNode arr = MAPPER.readTree(condJson);
+                        patients.stream()
+                                .filter(p -> {
+                                    try {
+                                        String condJson =
+                                                journalClient.getConditionsByPatient(p.id);
+                                        JsonNode arr = mapper.readTree(condJson);
 
-                                for (JsonNode c : arr) {
-                                    String diag = c.path("diagnosis").asText("").toLowerCase();
-                                    if (diag.contains(q)) return true;
-                                }
-                            } catch (Exception ignored) {}
-                            return false;
-                        }).collect(Collectors.toList())
-                )
-                .runSubscriptionOn(Infrastructure.getDefaultWorkerPool());
+                                        if (arr == null || !arr.isArray()) return false;
+
+                                        for (JsonNode c : arr) {
+                                            String diag =
+                                                    c.path("diagnosis").asText("").toLowerCase();
+                                            if (diag.contains(q)) return true;
+                                        }
+                                    } catch (Exception e) {
+                                        LOG.debug("Condition lookup failed", e);
+                                    }
+                                    return false;
+                                })
+                                .collect(Collectors.toList())
+                );
     }
 
     // ----------------------------
@@ -101,7 +113,11 @@ public class MyRemoteService {
         return Uni.createFrom().item(() -> {
             try {
                 String json = journalClient.getAllPractitioners();
-                JsonNode arr = MAPPER.readTree(json);
+                JsonNode arr = mapper.readTree(json);
+
+                if (arr == null || !arr.isArray()) {
+                    return List.<PractitionerDTO>of();
+                }
 
                 List<PractitionerDTO> out = new ArrayList<>();
 
@@ -118,7 +134,7 @@ public class MyRemoteService {
 
             } catch (Exception e) {
                 LOG.error("getAllPractitioners failed", e);
-                return List.of();
+                return List.<PractitionerDTO>of();
             }
         }).runSubscriptionOn(Infrastructure.getDefaultWorkerPool());
     }
@@ -129,9 +145,13 @@ public class MyRemoteService {
     public Uni<List<PatientDTO>> searchPatientsByPractitioner(Long practitionerId) {
         return Uni.createFrom().item(() -> {
             try {
-                String json = journalClient.getEncountersByPractitioner(practitionerId, null);
-                JsonNode arr = MAPPER.readTree(json);
-                if (!arr.isArray()) return List.of();
+                String json =
+                        journalClient.getEncountersByPractitioner(practitionerId, null);
+                JsonNode arr = mapper.readTree(json);
+
+                if (arr == null || !arr.isArray()) {
+                    return List.<PatientDTO>of();
+                }
 
                 Set<Long> ids = new HashSet<>();
                 for (JsonNode e : arr) {
@@ -139,7 +159,11 @@ public class MyRemoteService {
                 }
 
                 String patientsJson = journalClient.getAllPatients();
-                JsonNode patientsArr = MAPPER.readTree(patientsJson);
+                JsonNode patientsArr = mapper.readTree(patientsJson);
+
+                if (patientsArr == null || !patientsArr.isArray()) {
+                    return List.<PatientDTO>of();
+                }
 
                 List<PatientDTO> out = new ArrayList<>();
 
@@ -159,7 +183,7 @@ public class MyRemoteService {
 
             } catch (Exception e) {
                 LOG.error("searchPatientsByPractitioner failed", e);
-                return List.of();
+                return List.<PatientDTO>of();
             }
         }).runSubscriptionOn(Infrastructure.getDefaultWorkerPool());
     }
