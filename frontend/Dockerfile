@@ -1,18 +1,27 @@
-# 1. Använd Node 22
-FROM node:22
+# ===== Build stage =====
+FROM node:22 AS build
 
-# 2. Ange arbetsmapp
 WORKDIR /app
 
-# 3. Kopiera package.json och installera dependencies
 COPY package*.json ./
 RUN npm install
 
-# 4. Kopiera resten av frontend-projektet
 COPY . .
+RUN npm run build
 
-# 5. Exponera Vite dev-porten
-EXPOSE 5173
 
-# 6. Starta Vite dev-servern
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+# ===== Runtime stage =====
+FROM nginx:alpine
+
+# Ta bort default nginx config
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Lägg till egen config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Kopiera byggda filer
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
