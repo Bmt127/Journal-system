@@ -15,6 +15,6 @@ WORKDIR /app
 
 COPY --from=build /workspace/target/quarkus-app/ ./
 
-EXPOSE 8082
+EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "quarkus-run.jar"]
