@@ -15,25 +15,22 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Koppling till Keycloak
+    @Column(unique = true, nullable = false)
+    private String keycloakId;
+
     private String email;
     private String username;
+
+    // kommer inte användas längre (kan tas bort senare)
     private String password;
 
     @Column(name = "patient_id")
     private String patientId;
 
     @Column(name = "practitioner_id")
-    private String practitionerId; // NEW FIELD
+    private String practitionerId;
 
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    // Custom constructor
-    public User(String email, String username, String password, Role role, String patientId) {
-        this.email = email;
-        this.username = username;
-        this.password = password;
-        this.role = role;
-        this.patientId = patientId;
-    }
 }

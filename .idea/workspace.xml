@@ -5,11 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5af4467c-128c-45d6-b701-b164fa3efa4c" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/image-service/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/search-service/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-service/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/image-service/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-service/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/image-service/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/search-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/controller/PatientSearchController.java" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/controller/PatientSearchController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/service/MyRemoteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/service/MyRemoteService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/search-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -199,7 +201,7 @@
       <workItem from="1765136222646" duration="21704000" />
       <workItem from="1765159129124" duration="30928000" />
       <workItem from="1766139463055" duration="9343000" />
-      <workItem from="1766504297938" duration="39079000" />
+      <workItem from="1766504297938" duration="56330000" />
     </task>
     <servers />
   </component>
@@ -209,12 +211,6 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="java-field">
-          <url>file://$PROJECT_DIR$/user-service/src/main/java/se/kth/journal/userservice/entity/User.java</url>
-          <line>17</line>
-          <properties field="email" class="se.kth.journal.userservice.entity.User" />
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/frontend/src/App.jsx</url>
           <line>4</line>

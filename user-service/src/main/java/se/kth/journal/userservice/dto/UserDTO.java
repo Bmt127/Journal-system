@@ -10,6 +10,6 @@ public class UserDTO {
     private String username;
     private String email;
     private String role;
-    private String practitionerId;  // NEW
-    private String patientId;       // NEW
+    private String practitionerId;
+    private String patientId;
 }

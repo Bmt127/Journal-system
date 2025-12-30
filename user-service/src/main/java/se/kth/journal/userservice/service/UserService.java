@@ -44,6 +44,7 @@ public class UserService {
             throw new IllegalArgumentException("Fel användarnamn");
         }
 
+
         var user = userOpt.get();
 
         if (user.getPassword() == null || !user.getPassword().equals(password)) {
@@ -51,6 +52,14 @@ public class UserService {
         }
 
         return UserMapper.toDTO(user);
+    }
+
+    public UserDTO getByKeycloakId(String keycloakId) {
+        return userRepository.findByKeycloakId(keycloakId)
+                .map(UserMapper::toDTO)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found for keycloakId: " + keycloakId)
+                );
     }
 
 

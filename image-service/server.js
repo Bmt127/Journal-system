@@ -6,12 +6,36 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 
-const app = express();
+/* =========================
+   KEYCLOAK AUTH
+========================= */
+import { expressjwt } from "express-jwt";
+import jwksRsa from "jwks-rsa";
 
 /* =========================
-   CONFIG
+   APP INIT
 ========================= */
+const app = express();
 const PORT = process.env.PORT || 8080;
+
+/* =========================
+   KEYCLOAK CONFIG
+========================= */
+const KEYCLOAK_URL = "https://keycloakk.app.cloud.cbh.kth.se";
+const KEYCLOAK_REALM = "healthcare-realm";
+const KEYCLOAK_CLIENT_ID = "image-service";
+
+const checkJwt = expressjwt({
+    secret: jwksRsa.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs`
+    }),
+    audience: KEYCLOAK_CLIENT_ID,
+    issuer: `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}`,
+    algorithms: ["RS256"]
+});
 
 /* =========================
    MIDDLEWARE
@@ -36,11 +60,16 @@ fs.mkdirSync(imagesDir, { recursive: true });
 fs.mkdirSync(editsDir, { recursive: true });
 
 /* =========================
-   HEALTH CHECK (REQUIRED)
+   HEALTH CHECK (OPEN)
 ========================= */
 app.get("/healthz", (req, res) => {
     res.status(200).send("OK");
 });
+
+/* =========================
+   AUTH REQUIRED BELOW
+========================= */
+app.use(checkJwt);
 
 /* =========================
    MULTER STORAGE
