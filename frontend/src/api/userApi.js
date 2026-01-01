@@ -1,7 +1,8 @@
 import axios from "axios";
-import {attachToken} from "./attachToken.js";
+import { attachToken } from "./attachToken.js";
 
 export const userApi = axios.create({
-    baseURL: "http://localhost:30081"
+    baseURL: import.meta.env.VITE_USER_API_URL
 });
+
 attachToken(userApi);
