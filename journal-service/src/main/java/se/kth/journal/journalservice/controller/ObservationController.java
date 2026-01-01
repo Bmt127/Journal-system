@@ -10,25 +10,26 @@ import se.kth.journal.journalservice.repository.ObservationRepository;
 
 import java.time.LocalDate;
 import java.util.List;
-
 @RestController
 @RequestMapping("/observations")
 @CrossOrigin("*")
 public class ObservationController {
 
-    @Autowired
-    private ObservationRepository repo;
+    private final ObservationRepository repo;
 
-    // Doctor, staff och patient får läsa observationer för en patient
+    public ObservationController(ObservationRepository repo) {
+        this.repo = repo;
+    }
+
     @GetMapping("/patient/{id}")
     @PreAuthorize("hasAnyRole('doctor','staff','patient')")
     public List<Observation> getForPatient(@PathVariable Long id) {
         return repo.findByPatientId(id);
     }
 
-    // Endast doctor och staff får skapa observationer
+    //  permitAll – skapas via staff/doctor UI OCH ev backend
     @PostMapping
-    @PreAuthorize("hasAnyRole('doctor','staff')")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<Observation> create(@RequestBody CreateObservationRequest req) {
 
         Observation obs = new Observation(

@@ -8,7 +8,6 @@ import se.kth.journal.journalservice.entity.Patient;
 import se.kth.journal.journalservice.service.PatientService;
 
 import java.util.Map;
-
 @RestController
 @RequestMapping("/patients")
 @RequiredArgsConstructor
@@ -17,14 +16,12 @@ public class PatientController {
 
     private final PatientService service;
 
-    // Doctor och staff får se alla patienter
     @GetMapping
     @PreAuthorize("hasAnyRole('doctor','staff')")
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 
-    // Doctor, staff och patient får se patient via id
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('doctor','staff','patient')")
     public ResponseEntity<?> getById(@PathVariable Long id) {
@@ -34,7 +31,6 @@ public class PatientController {
                         .body(Map.of("error", "Patient not found")));
     }
 
-    // Patient hämtar sig själv via userId, staff och doctor tillåts också
     @GetMapping("/by-user/{userId}")
     @PreAuthorize("hasAnyRole('doctor','staff','patient')")
     public ResponseEntity<?> getByUserId(@PathVariable Long userId) {
@@ -44,11 +40,10 @@ public class PatientController {
                         .body(Map.of("error", "Patient not found")));
     }
 
-    // Skapas av user-service (backend) – kräver giltig token
+    // VIKTIG FIX: permitAll (backend → backend)
     @PostMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<?> createPatient(@RequestBody Map<String, Object> payload) {
-
         try {
             Long userId = Long.valueOf(payload.get("userId").toString());
             String username = payload.getOrDefault("username", "").toString();
@@ -74,14 +69,11 @@ public class PatientController {
         }
     }
 
-    // Endast doctor får ta bort patient
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('doctor')")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        if (service.delete(id)) {
-            return ResponseEntity.ok(Map.of("status", "deleted"));
-        }
-        return ResponseEntity.status(404)
-                .body(Map.of("error", "Patient not found"));
+        return service.delete(id)
+                ? ResponseEntity.ok(Map.of("status", "deleted"))
+                : ResponseEntity.status(404).body(Map.of("error", "Patient not found"));
     }
 }
