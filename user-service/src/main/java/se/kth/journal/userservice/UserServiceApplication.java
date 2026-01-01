@@ -31,7 +31,6 @@ public class UserServiceApplication {
             User patient = repo.save(User.builder()
                     .email("bemnet@example.com")
                     .username("bemnet")
-                    .password("123")
                     .role(Role.PATIENT)
                     .build()
             );
@@ -64,7 +63,6 @@ public class UserServiceApplication {
             User doctor = repo.save(User.builder()
                     .email("doctor@example.com")
                     .username("doctor")
-                    .password("123")
                     .role(Role.DOCTOR)
                     .build()
             );
@@ -97,7 +95,6 @@ public class UserServiceApplication {
             User staff = repo.save(User.builder()
                     .email("staff@example.com")
                     .username("staff")
-                    .password("123")
                     .role(Role.STAFF)
                     .build()
             );
