@@ -5,15 +5,15 @@ import keycloak from "./keycloak";
 
 keycloak.init({
     onLoad: "login-required",
-    checkLoginIframe: false
-}).then(authenticated => {
+    checkLoginIframe: false,
+}).then((authenticated) => {
     if (!authenticated) {
         keycloak.login();
     }
 
     ReactDOM.createRoot(document.getElementById("root")).render(
         <React.StrictMode>
-            <App keycloak={keycloak} />
+            <App />
         </React.StrictMode>
     );
 });
