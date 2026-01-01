@@ -27,8 +27,11 @@ public class UserServiceApplication {
 
             System.out.println("Seeding default users...");
 
+            // ======================
             // PATIENT
+            // ======================
             User patient = repo.save(User.builder()
+                    .keycloakId("seed-patient-bemnet")
                     .email("bemnet@example.com")
                     .username("bemnet")
                     .role(Role.PATIENT)
@@ -41,8 +44,6 @@ public class UserServiceApplication {
                 req.put("username", patient.getUsername());
                 req.put("email", patient.getEmail());
                 req.put("role", patient.getRole().name());
-                req.put("firstName", "Bemnet");
-                req.put("lastName", "Tadesse");
 
                 Map response = restTemplate.postForObject(
                         "http://journal-service:8084/patients",
@@ -59,8 +60,11 @@ public class UserServiceApplication {
                 System.out.println("Patient creation failed: " + e.getMessage());
             }
 
+            // ======================
             // DOCTOR
+            // ======================
             User doctor = repo.save(User.builder()
+                    .keycloakId("seed-doctor-1")
                     .email("doctor@example.com")
                     .username("doctor")
                     .role(Role.DOCTOR)
@@ -73,8 +77,6 @@ public class UserServiceApplication {
                 req.put("username", doctor.getUsername());
                 req.put("email", doctor.getEmail());
                 req.put("role", doctor.getRole().name());
-                req.put("firstName", "Dr");
-                req.put("lastName", "Doctor");
 
                 Map response = restTemplate.postForObject(
                         "http://journal-service:8084/practitioners",
@@ -91,8 +93,11 @@ public class UserServiceApplication {
                 System.out.println("Doctor creation failed: " + e.getMessage());
             }
 
+            // ======================
             // STAFF
+            // ======================
             User staff = repo.save(User.builder()
+                    .keycloakId("seed-staff-1")
                     .email("staff@example.com")
                     .username("staff")
                     .role(Role.STAFF)
@@ -105,8 +110,6 @@ public class UserServiceApplication {
                 req.put("username", staff.getUsername());
                 req.put("email", staff.getEmail());
                 req.put("role", staff.getRole().name());
-                req.put("firstName", "Staff");
-                req.put("lastName", "Member");
 
                 Map response = restTemplate.postForObject(
                         "http://journal-service:8084/practitioners",
