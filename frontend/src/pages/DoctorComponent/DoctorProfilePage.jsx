@@ -9,48 +9,35 @@ export default function DoctorProfilePage() {
     const [user, setUser] = useState(null);
     const [error, setError] = useState(null);
 
-    const userId = localStorage.getItem("userId");
-
     useEffect(() => {
-        if (!userId) {
-            setError("Ingen användare inloggad");
-            return;
-        }
-
         async function load() {
             try {
-                // 1. Hämta user
-                const userRes = await userApi.get(`/users/${userId}`);
-                setUser(userRes.data);
+                // 1. Hämta inloggad användare via token
+                const userRes = await userApi.get("/users/me");
+                const u = userRes.data;
+                setUser(u);
 
-                const practitionerId = userRes.data.practitionerId;
+                const practitionerId = u.practitionerId;
                 if (!practitionerId) {
-                    setError("Ingen practitioner kopplad till användaren.");
+                    setError("Ingen practitioner kopplad till användaren");
                     return;
                 }
 
                 // 2. Hämta practitioner
-                const pr = await journalApi.get(`/practitioners/${practitionerId}`);
-                const p = pr.data;
-
-                const givenName = p.firstName || "";
-                const familyName = p.lastName || "";
-
+                const prRes = await journalApi.get(`/practitioners/${practitionerId}`);
+                const p = prRes.data;
 
                 setDoctor({
-                    givenName,
-                    familyName,
-                    raw: p
+                    givenName: p.firstName || "",
+                    familyName: p.lastName || ""
                 });
-
-            } catch (err) {
-                console.error(err);
+            } catch (e) {
                 setError("Kunde inte hämta läkarprofilen");
             }
         }
 
         load();
-    }, [userId]);
+    }, []);
 
     if (error) return <p style={{ color: "red" }}>{error}</p>;
     if (!doctor || !user) return <p>Laddar...</p>;
@@ -61,11 +48,18 @@ export default function DoctorProfilePage() {
                 Min profil
             </Typography>
 
-            <Typography sx={{ mb: 1 }}><strong>Förnamn:</strong> {doctor.givenName}</Typography>
-            <Typography sx={{ mb: 1 }}><strong>Efternamn:</strong> {doctor.familyName}</Typography>
-            <Typography sx={{ mb: 1 }}><strong>E-post:</strong> {user.email}</Typography>
-
-            <Typography><strong>Roll:</strong> {user.role}</Typography>
+            <Typography sx={{ mb: 1 }}>
+                <strong>Förnamn:</strong> {doctor.givenName}
+            </Typography>
+            <Typography sx={{ mb: 1 }}>
+                <strong>Efternamn:</strong> {doctor.familyName}
+            </Typography>
+            <Typography sx={{ mb: 1 }}>
+                <strong>E-post:</strong> {user.email}
+            </Typography>
+            <Typography>
+                <strong>Roll:</strong> {user.role}
+            </Typography>
         </Box>
     );
 }

@@ -8,19 +8,34 @@ export default function ProfilePage() {
     const [patient, setPatient] = useState(null);
     const [error, setError] = useState(null);
 
-    // 1. Hämta patientId via Keycloak-användare
     useEffect(() => {
+        let isMounted = true;
+
         userApi.get("/users/me")
             .then(res => {
-                const patientId = res.data.patientId;
+                const patientId = res.data?.patientId;
+
+                if (!patientId) {
+                    throw new Error("patientId saknas på användaren");
+                }
+
                 return journalApi.get(`/patients/${patientId}`);
             })
             .then(res => {
-                setPatient(res.data);
+                if (isMounted) {
+                    setPatient(res.data);
+                }
             })
-            .catch(() => {
-                setError("Kunde inte hämta patientdata");
+            .catch(err => {
+                console.error("ProfilePage error:", err);
+                if (isMounted) {
+                    setError("Kunde inte hämta patientdata");
+                }
             });
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     if (error) {

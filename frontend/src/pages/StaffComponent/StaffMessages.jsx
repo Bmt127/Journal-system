@@ -18,20 +18,29 @@ export default function StaffMessages() {
     const [selectedUserId, setSelectedUserId] = useState("");
     const [content, setContent] = useState("");
     const [error, setError] = useState(null);
+    const [userId, setUserId] = useState(null);
 
-    const userId = Number(localStorage.getItem("userId"));
     const endRef = useRef(null);
 
-    // Load all users
+    // Hämta inloggad användare via token
+    useEffect(() => {
+        api.get("/users/me")
+            .then(res => setUserId(res.data.id))
+            .catch(() => setError("Kunde inte identifiera användare"));
+    }, []);
+
+    // Hämta alla användare
     useEffect(() => {
         api.get("/users")
-            .then(res => setUsers(res.data))
+            .then(res => setUsers(Array.isArray(res.data) ? res.data : []))
             .catch(() => setError("Kunde inte hämta användare"));
     }, []);
 
-    // Load conversation between staff and selected user
     const loadConversation = useCallback(async (otherId) => {
-        if (!otherId) return;
+        if (!userId || !otherId) {
+            setConversation([]);
+            return;
+        }
 
         try {
             const [sent, received] = await Promise.all([
@@ -39,9 +48,10 @@ export default function StaffMessages() {
                 api.get(`/messages/receiver/${userId}`)
             ]);
 
-            const combined = [...sent.data, ...received.data];
+            const sentArr = Array.isArray(sent.data) ? sent.data : [];
+            const recvArr = Array.isArray(received.data) ? received.data : [];
 
-            const conv = combined
+            const conv = [...sentArr, ...recvArr]
                 .filter(m =>
                     Number(m.senderId) === Number(otherId) ||
                     Number(m.receiverId) === Number(otherId)
@@ -49,24 +59,24 @@ export default function StaffMessages() {
                 .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
             setConversation(conv);
-
-        } catch (err) {
+        } catch {
+            setConversation([]);
             setError("Kunde inte ladda konversation");
         }
     }, [userId]);
 
-    // Reload when user selected
     useEffect(() => {
-        if (selectedUserId) loadConversation(selectedUserId);
+        if (selectedUserId) {
+            loadConversation(selectedUserId);
+        }
     }, [selectedUserId, loadConversation]);
 
-    // Auto scroll to bottom
     useEffect(() => {
         endRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [conversation]);
 
     const handleSend = async () => {
-        if (!content.trim() || !selectedUserId) return;
+        if (!content.trim() || !selectedUserId || !userId) return;
 
         try {
             await api.post("/messages", {
@@ -77,7 +87,6 @@ export default function StaffMessages() {
 
             setContent("");
             loadConversation(selectedUserId);
-
         } catch {
             setError("Kunde inte skicka meddelande");
         }
@@ -85,14 +94,15 @@ export default function StaffMessages() {
 
     const getSenderLabel = (senderId) => {
         if (Number(senderId) === Number(userId)) return "Du";
-
         const u = users.find(x => Number(x.id) === Number(senderId));
         return u ? `${u.username} (${u.role})` : "Okänd";
     };
 
     return (
         <div className="message-container">
-            <Typography variant="h5" sx={{ mb: 2 }}>Meddelanden</Typography>
+            <Typography variant="h5" sx={{ mb: 2 }}>
+                Meddelanden
+            </Typography>
 
             {error && <Typography color="error">{error}</Typography>}
 
@@ -103,7 +113,7 @@ export default function StaffMessages() {
                     onChange={(e) => setSelectedUserId(Number(e.target.value))}
                 >
                     {users
-                        .filter(u => Number(u.id) !== Number(userId)) // show all except current staff
+                        .filter(u => Number(u.id) !== Number(userId))
                         .map(u => (
                             <MenuItem key={u.id} value={u.id}>
                                 {u.username} ({u.role})
@@ -115,14 +125,14 @@ export default function StaffMessages() {
             {selectedUserId && (
                 <>
                     <div className="message-list">
-                        {conversation.length === 0 && (
-                            <Typography variant="body2">Ingen konversation än.</Typography>
-                        )}
-
                         {conversation.map(m => (
                             <Paper
                                 key={m.id}
-                                className={`message-item ${Number(m.senderId) === Number(userId) ? "sent" : "received"}`}
+                                className={`message-item ${
+                                    Number(m.senderId) === Number(userId)
+                                        ? "sent"
+                                        : "received"
+                                }`}
                             >
                                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
                                     {getSenderLabel(m.senderId)}:
@@ -133,7 +143,6 @@ export default function StaffMessages() {
                                 </Typography>
                             </Paper>
                         ))}
-
                         <div ref={endRef} />
                     </div>
 

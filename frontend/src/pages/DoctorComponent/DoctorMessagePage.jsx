@@ -18,20 +18,26 @@ export default function DoctorMessagePage() {
     const [users, setUsers] = useState([]);
     const [selectedUserId, setSelectedUserId] = useState("");
     const [content, setContent] = useState("");
+    const [userId, setUserId] = useState(null);
 
-    const userId = Number(localStorage.getItem("userId"));
     const endRef = useRef(null);
 
-    // Load all users
+    // Hämta inloggad användare via token
     useEffect(() => {
-        userApi.get("/users")
-            .then(res => setUsers(res.data))
-            .catch(err => console.error("Kunde inte hämta användare:", err));
+        userApi.get("/users/me")
+            .then(res => setUserId(res.data.id))
+            .catch(() => setUserId(null));
     }, []);
 
-    // Unified conversation loader
+    // Hämta alla användare
+    useEffect(() => {
+        userApi.get("/users")
+            .then(res => setUsers(Array.isArray(res.data) ? res.data : []))
+            .catch(() => setUsers([]));
+    }, []);
+
     const loadConversation = useCallback(async (otherUserId) => {
-        if (!otherUserId) {
+        if (!userId || !otherUserId) {
             setConversation([]);
             return;
         }
@@ -42,7 +48,10 @@ export default function DoctorMessagePage() {
                 messageApi.get(`/messages/receiver/${userId}`)
             ]);
 
-            const all = [...sent.data, ...received.data]
+            const sentArr = Array.isArray(sent.data) ? sent.data : [];
+            const recvArr = Array.isArray(received.data) ? received.data : [];
+
+            const all = [...sentArr, ...recvArr]
                 .filter(m =>
                     Number(m.senderId) === Number(otherUserId) ||
                     Number(m.receiverId) === Number(otherUserId)
@@ -50,40 +59,32 @@ export default function DoctorMessagePage() {
                 .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
             setConversation(all);
-
-        } catch (e) {
-            console.error("Kunde inte hämta konversation:", e);
+        } catch {
             setConversation([]);
         }
     }, [userId]);
 
-    // Load conversation when user changes
     useEffect(() => {
-        loadConversation(selectedUserId);
+        if (selectedUserId) {
+            loadConversation(selectedUserId);
+        }
     }, [selectedUserId, loadConversation]);
 
-    // Auto-scroll
     useEffect(() => {
         endRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [conversation]);
 
     const handleSend = async () => {
-        if (!content.trim() || !selectedUserId) return;
+        if (!content.trim() || !selectedUserId || !userId) return;
 
-        try {
-            await messageApi.post("/messages", {
-                senderId: userId,
-                receiverId: Number(selectedUserId),
-                content: content.trim() // FIXED
-            });
+        await messageApi.post("/messages", {
+            senderId: userId,
+            receiverId: Number(selectedUserId),
+            content: content.trim()
+        });
 
-            setContent("");
-            await loadConversation(selectedUserId);
-
-        } catch (err) {
-            console.error("Kunde inte skicka meddelande:", err);
-            alert("Kunde inte skicka meddelande.");
-        }
+        setContent("");
+        loadConversation(selectedUserId);
     };
 
     const getName = (id) => {
@@ -104,7 +105,7 @@ export default function DoctorMessagePage() {
                     onChange={(e) => setSelectedUserId(Number(e.target.value))}
                 >
                     {users
-                        .filter(u => u.id !== userId)
+                        .filter(u => Number(u.id) !== Number(userId))
                         .map(u => (
                             <MenuItem key={u.id} value={u.id}>
                                 {u.username} ({u.role})
@@ -113,37 +114,29 @@ export default function DoctorMessagePage() {
                 </Select>
             </FormControl>
 
-            {selectedUserId ? (
+            {selectedUserId && (
                 <>
                     <div className="message-list">
-                        {conversation.length === 0 && (
-                            <Typography>Ingen konversation ännu</Typography>
-                        )}
-
-                        {conversation.map((m) => (
+                        {conversation.map(m => (
                             <Paper
                                 key={m.id}
                                 className={`message-item ${
-                                    Number(m.senderId) === userId ? "sent" : "received"
+                                    Number(m.senderId) === Number(userId)
+                                        ? "sent"
+                                        : "received"
                                 }`}
                             >
                                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                                    {Number(m.senderId) === userId ? "Du" : getName(m.senderId)}:
+                                    {Number(m.senderId) === Number(userId)
+                                        ? "Du"
+                                        : getName(m.senderId)}
                                 </Typography>
-
                                 <Typography>{m.content}</Typography>
-
-                                <Typography
-                                    variant="caption"
-                                    sx={{ mt: 1, display: "block" }}
-                                >
-                                    {m.timestamp
-                                        ? new Date(m.timestamp).toLocaleString()
-                                        : ""}
+                                <Typography variant="caption">
+                                    {new Date(m.timestamp).toLocaleString()}
                                 </Typography>
                             </Paper>
                         ))}
-
                         <div ref={endRef} />
                     </div>
 
@@ -160,8 +153,6 @@ export default function DoctorMessagePage() {
                         </Button>
                     </Paper>
                 </>
-            ) : (
-                <Typography>Välj en person för att se konversationen</Typography>
             )}
         </div>
     );

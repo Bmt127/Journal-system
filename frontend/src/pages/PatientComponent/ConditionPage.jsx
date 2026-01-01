@@ -10,27 +10,33 @@ export default function ConditionPage() {
     const [selectedId, setSelectedId] = useState("");
     const [error, setError] = useState(null);
 
-    // Hämta patientId via Keycloak-user
+    // Hämta patientId från inloggad användare
     useEffect(() => {
         userApi.get("/users/me")
             .then(res => {
-                setPatientId(res.data.patientId);
+                if (res.data?.patientId) {
+                    setPatientId(res.data.patientId);
+                } else {
+                    setError("Ingen patient kopplad till användaren");
+                }
             })
             .catch(() => {
                 setError("Kunde inte hämta patient");
             });
     }, []);
 
-    //Hämta conditions för patient
+    // Hämta tillstånd för patient
     useEffect(() => {
         if (!patientId) return;
 
         journalApi.get(`/conditions/patient/${patientId}`)
-            .then(res => setConditions(res.data))
+            .then(res => {
+                setConditions(Array.isArray(res.data) ? res.data : []);
+            })
             .catch(() => setError("Kunde inte hämta tillstånd"));
     }, [patientId]);
 
-    const selected = conditions.find(c => c.id === selectedId);
+    const selected = conditions.find(c => Number(c.id) === Number(selectedId));
 
     return (
         <div className="condition-container">
@@ -42,9 +48,9 @@ export default function ConditionPage() {
                 <InputLabel>Välj tillstånd</InputLabel>
                 <Select
                     value={selectedId}
-                    onChange={(e) => setSelectedId(e.target.value)}
+                    onChange={(e) => setSelectedId(Number(e.target.value))}
                 >
-                    {conditions.map((c) => (
+                    {conditions.map(c => (
                         <MenuItem key={c.id} value={c.id}>
                             {c.diagnosis}
                         </MenuItem>

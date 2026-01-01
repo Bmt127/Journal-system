@@ -1,14 +1,21 @@
 import { useEffect, useState } from "react";
 import { journalApi } from "../../api/journalApi";
 import {
-    Box, Typography, MenuItem, Select, FormControl, InputLabel,
-    Paper, Button, TextField
+    Box,
+    Typography,
+    MenuItem,
+    Select,
+    FormControl,
+    InputLabel,
+    Paper,
+    Button,
+    TextField
 } from "@mui/material";
 import "./PatientList.css";
 
 export default function PatientList() {
     const [patients, setPatients] = useState([]);
-    const [selectedId, setSelectedId] = useState(null);
+    const [selectedId, setSelectedId] = useState("");
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [error, setError] = useState(null);
 
@@ -24,7 +31,8 @@ export default function PatientList() {
     useEffect(() => {
         journalApi.get("/patients")
             .then(res => {
-                const mapped = res.data.map(p => ({
+                const data = Array.isArray(res.data) ? res.data : [];
+                const mapped = data.map(p => ({
                     id: p.id,
                     givenName: p.firstName || "",
                     familyName: p.lastName || ""
@@ -44,58 +52,52 @@ export default function PatientList() {
         journalApi.get(`/patients/${selectedId}`)
             .then(res => {
                 const p = res.data;
-                const mapped = {
+                if (!p) return;
+
+                setSelectedPatient({
                     id: p.id,
                     givenName: p.firstName || "",
                     familyName: p.lastName || ""
-                };
-                setSelectedPatient(mapped);
+                });
             })
             .catch(() => setError("Kunde inte hämta patient"));
     }, [selectedId]);
 
     // ADD NOTE
     const handleAddNote = async () => {
-        if (!note.trim()) return alert("Skriv en notering.");
-        if (!selectedId) return alert("Ingen patient vald.");
+        if (!note.trim()) return;
+        if (!selectedId) return;
 
         try {
             await journalApi.post("/observations", {
-                patientId: selectedId,
-                note
+                patientId: Number(selectedId),
+                value: note.trim()
             });
             setNote("");
             setShowNoteForm(false);
-            alert("Notering tillagd!");
         } catch (err) {
-            console.error(err);
-            alert("Fel: Backend kanske saknar POST /observations");
+            setError("Kunde inte spara notering");
         }
     };
 
-    // ADD CONDITION (MATCHAR BACKEND)
+    // ADD CONDITION
     const handleAddDiagnosis = async () => {
-        if (!description || !severity || !onsetDate) {
-            alert("Fyll i alla obligatoriska fält.");
-            return;
-        }
+        if (!description || !severity || !onsetDate || !selectedId) return;
 
         try {
             await journalApi.post("/conditions", {
-                patientId: selectedId,
+                patientId: Number(selectedId),
                 diagnosis: description,
                 notes: severity,
-                onsetDate: onsetDate
+                onsetDate
             });
 
             setDescription("");
             setSeverity("");
             setOnsetDate("");
             setShowDiagnosisForm(false);
-            alert("Diagnos sparad!");
         } catch (err) {
-            console.error(err);
-            alert("Fel: Backend kanske saknar POST /conditions");
+            setError("Kunde inte spara diagnos");
         }
     };
 
@@ -108,10 +110,10 @@ export default function PatientList() {
             <FormControl className="patient-list-dropdown">
                 <InputLabel>Välj patient</InputLabel>
                 <Select
-                    value={selectedId || ""}
-                    onChange={(e) => setSelectedId(e.target.value)}
+                    value={selectedId}
+                    onChange={(e) => setSelectedId(Number(e.target.value))}
                 >
-                    {patients.map((p) => (
+                    {patients.map(p => (
                         <MenuItem key={p.id} value={p.id}>
                             {p.givenName} {p.familyName}
                         </MenuItem>
@@ -126,15 +128,20 @@ export default function PatientList() {
                     </Typography>
 
                     <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
-                        <Button variant="contained" onClick={() => setShowNoteForm(!showNoteForm)}>
+                        <Button
+                            variant="contained"
+                            onClick={() => setShowNoteForm(v => !v)}
+                        >
                             Lägg till notering
                         </Button>
-                        <Button variant="outlined" onClick={() => setShowDiagnosisForm(!showDiagnosisForm)}>
+                        <Button
+                            variant="outlined"
+                            onClick={() => setShowDiagnosisForm(v => !v)}
+                        >
                             Fastställ diagnos
                         </Button>
                     </Box>
 
-                    {/* NOTE FORM */}
                     {showNoteForm && (
                         <Box sx={{ mt: 2 }}>
                             <TextField
@@ -145,13 +152,16 @@ export default function PatientList() {
                                 value={note}
                                 onChange={(e) => setNote(e.target.value)}
                             />
-                            <Button sx={{ mt: 1 }} variant="contained" onClick={handleAddNote}>
+                            <Button
+                                sx={{ mt: 1 }}
+                                variant="contained"
+                                onClick={handleAddNote}
+                            >
                                 Spara notering
                             </Button>
                         </Box>
                     )}
 
-                    {/* DIAGNOSIS FORM */}
                     {showDiagnosisForm && (
                         <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
                             <TextField
@@ -171,8 +181,11 @@ export default function PatientList() {
                                 value={onsetDate}
                                 onChange={(e) => setOnsetDate(e.target.value)}
                             />
-
-                            <Button sx={{ mt: 1 }} variant="contained" color="secondary" onClick={handleAddDiagnosis}>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={handleAddDiagnosis}
+                            >
                                 Spara diagnos
                             </Button>
                         </Box>

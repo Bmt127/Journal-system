@@ -18,27 +18,47 @@ export default function ObservationPage() {
     const [selectedId, setSelectedId] = useState("");
     const [error, setError] = useState(null);
 
-    // 1. Hämta patientId via Keycloak-användare
     useEffect(() => {
+        let isMounted = true;
+
         userApi.get("/users/me")
             .then(res => {
-                setPatientId(res.data.patientId);
+                const pid = res.data?.patientId;
+                if (!pid) throw new Error("patientId saknas");
+                if (isMounted) setPatientId(pid);
             })
-            .catch(() => {
-                setError("Kunde inte hämta patient");
+            .catch(err => {
+                console.error(err);
+                if (isMounted) setError("Kunde inte hämta patient");
             });
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
-    // 2. Hämta observationer för patient
     useEffect(() => {
         if (!patientId) return;
 
+        let isMounted = true;
+
         journalApi.get(`/observations/patient/${patientId}`)
-            .then(res => setObservations(res.data))
-            .catch(() => setError("Kunde inte hämta observationer"));
+            .then(res => {
+                const list = Array.isArray(res.data) ? res.data : [];
+                if (isMounted) setObservations(list);
+            })
+            .catch(err => {
+                console.error(err);
+                if (isMounted) setError("Kunde inte hämta observationer");
+            });
+
+        return () => {
+            isMounted = false;
+        };
     }, [patientId]);
 
-    const selectedObs = observations.find(o => o.id === selectedId);
+    const safeObservations = Array.isArray(observations) ? observations : [];
+    const selectedObs = safeObservations.find(o => String(o.id) === String(selectedId));
 
     return (
         <Box className="observation-container">
@@ -58,7 +78,7 @@ export default function ObservationPage() {
                     value={selectedId}
                     onChange={(e) => setSelectedId(e.target.value)}
                 >
-                    {observations.map((o) => (
+                    {safeObservations.map(o => (
                         <MenuItem key={o.id} value={o.id}>
                             {o.value || "Observation"} — {o.observationDate}
                         </MenuItem>
