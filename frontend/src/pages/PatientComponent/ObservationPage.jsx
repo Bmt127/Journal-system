@@ -1,43 +1,63 @@
 import { useEffect, useState } from "react";
 import { journalApi } from "../../api/journalApi";
-import { Box, Typography, MenuItem, Select, FormControl, InputLabel, Paper } from "@mui/material";
+import { userApi } from "../../api/userApi";
+import {
+    Box,
+    Typography,
+    MenuItem,
+    Select,
+    FormControl,
+    InputLabel,
+    Paper
+} from "@mui/material";
 import "./ObservationPage.css";
 
 export default function ObservationPage() {
-    const [patient, setPatient] = useState(null);
+    const [patientId, setPatientId] = useState(null);
     const [observations, setObservations] = useState([]);
     const [selectedId, setSelectedId] = useState("");
     const [error, setError] = useState(null);
 
-    const userId = localStorage.getItem("userId");
-
-    // Hämta patient utifrån userId
+    // 1. Hämta patientId via Keycloak-användare
     useEffect(() => {
-        journalApi.get(`/patients/by-user/${userId}`)
-            .then(res => setPatient(res.data))
-            .catch(() => setError("Kunde inte hämta patient"));
-    }, [userId]);
+        userApi.get("/users/me")
+            .then(res => {
+                setPatientId(res.data.patientId);
+            })
+            .catch(() => {
+                setError("Kunde inte hämta patient");
+            });
+    }, []);
 
-    // Hämta observationer
+    // 2. Hämta observationer för patient
     useEffect(() => {
-        if (!patient?.id) return;
+        if (!patientId) return;
 
-        journalApi.get(`/observations/patient/${patient.id}`)
+        journalApi.get(`/observations/patient/${patientId}`)
             .then(res => setObservations(res.data))
             .catch(() => setError("Kunde inte hämta observationer"));
-    }, [patient]);
+    }, [patientId]);
 
     const selectedObs = observations.find(o => o.id === selectedId);
 
     return (
         <Box className="observation-container">
-            <Typography className="observation-title">Mina observationer</Typography>
+            <Typography className="observation-title">
+                Mina observationer
+            </Typography>
 
-            {error && <Typography color="error">{error}</Typography>}
+            {error && (
+                <Typography color="error">
+                    {error}
+                </Typography>
+            )}
 
             <FormControl className="observation-dropdown">
                 <InputLabel>Välj observation</InputLabel>
-                <Select value={selectedId} onChange={(e) => setSelectedId(e.target.value)}>
+                <Select
+                    value={selectedId}
+                    onChange={(e) => setSelectedId(e.target.value)}
+                >
                     {observations.map((o) => (
                         <MenuItem key={o.id} value={o.id}>
                             {o.value || "Observation"} — {o.observationDate}
@@ -48,10 +68,15 @@ export default function ObservationPage() {
 
             {selectedObs && (
                 <Paper className="observation-card">
-                    <Typography variant="h6">Observation</Typography>
-                    <Typography><strong>Datum:</strong> {selectedObs.observationDate}</Typography>
+                    <Typography variant="h6">
+                        Observation
+                    </Typography>
                     <Typography>
-                        <strong>Anteckning:</strong> {selectedObs.value || "Ingen anteckning"}
+                        <strong>Datum:</strong> {selectedObs.observationDate}
+                    </Typography>
+                    <Typography>
+                        <strong>Anteckning:</strong>{" "}
+                        {selectedObs.value || "Ingen anteckning"}
                     </Typography>
                 </Paper>
             )}

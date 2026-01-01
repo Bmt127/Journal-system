@@ -1,31 +1,34 @@
 import { useEffect, useState } from "react";
 import { journalApi } from "../../api/journalApi";
+import { userApi } from "../../api/userApi";
 import { FormControl, Select, MenuItem, InputLabel } from "@mui/material";
 import "./ConditionPage.css";
 
 export default function ConditionPage() {
-    const [patient, setPatient] = useState(null);
+    const [patientId, setPatientId] = useState(null);
     const [conditions, setConditions] = useState([]);
     const [selectedId, setSelectedId] = useState("");
     const [error, setError] = useState(null);
 
-    const userId = localStorage.getItem("userId");
-
-    // Hämta patient kopplad till user-account
+    // Hämta patientId via Keycloak-user
     useEffect(() => {
-        journalApi.get(`/patients/by-user/${userId}`)
-            .then(res => setPatient(res.data))
-            .catch(() => setError("Kunde inte hämta patient"));
-    }, [userId]);
+        userApi.get("/users/me")
+            .then(res => {
+                setPatientId(res.data.patientId);
+            })
+            .catch(() => {
+                setError("Kunde inte hämta patient");
+            });
+    }, []);
 
-    // Hämta conditions för patient
+    //Hämta conditions för patient
     useEffect(() => {
-        if (!patient?.id) return;
+        if (!patientId) return;
 
-        journalApi.get(`/conditions/patient/${patient.id}`)
+        journalApi.get(`/conditions/patient/${patientId}`)
             .then(res => setConditions(res.data))
             .catch(() => setError("Kunde inte hämta tillstånd"));
-    }, [patient]);
+    }, [patientId]);
 
     const selected = conditions.find(c => c.id === selectedId);
 
@@ -37,7 +40,10 @@ export default function ConditionPage() {
 
             <FormControl fullWidth className="condition-select">
                 <InputLabel>Välj tillstånd</InputLabel>
-                <Select value={selectedId} onChange={(e) => setSelectedId(e.target.value)}>
+                <Select
+                    value={selectedId}
+                    onChange={(e) => setSelectedId(e.target.value)}
+                >
                     {conditions.map((c) => (
                         <MenuItem key={c.id} value={c.id}>
                             {c.diagnosis}

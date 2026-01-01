@@ -1,4 +1,5 @@
 import axios from "axios";
+import {attachToken} from "./attachToken.js";
 
 const imageApi = axios.create({
     baseURL: "http://localhost:30085"
@@ -10,5 +11,5 @@ export function uploadImage(formData) {
         headers: { "Content-Type": "multipart/form-data" }
     });
 }
-
+attachToken(imageApi);
 export { imageApi };
