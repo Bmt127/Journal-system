@@ -26,6 +26,10 @@ public class UserService {
     @Value("${journal.service.url:http://journal-service:8084}")
     private String journalBaseUrl;
 
+    /* =========================
+       READ
+       ========================= */
+
     public List<UserDTO> getAll() {
         return userRepository.findAll()
                 .stream()
@@ -39,15 +43,35 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+    /**
+     * Hämtar användare via Keycloak-id.
+     * Saknas patientId / practitionerId → skapas automatiskt.
+     */
     public UserDTO getByKeycloakId(String keycloakId) {
-        return userRepository.findByKeycloakId(keycloakId)
-                .map(UserMapper::toDTO)
+
+        User user = userRepository.findByKeycloakId(keycloakId)
                 .orElseThrow(() ->
                         new RuntimeException("User not found for keycloakId: " + keycloakId)
                 );
+
+        // PATIENT → skapa patient om saknas
+        if (user.getRole() == Role.PATIENT && user.getPatientId() == null) {
+            provisionPatient(user);
+        }
+
+        // DOCTOR / STAFF → skapa practitioner om saknas
+        if ((user.getRole() == Role.DOCTOR || user.getRole() == Role.STAFF)
+                && user.getPractitionerId() == null) {
+            provisionPractitioner(user);
+        }
+
+        return UserMapper.toDTO(user);
     }
 
-    // CREATE USER – JWT sub MÅSTE skickas in
+    /* =========================
+       CREATE
+       ========================= */
+
     public UserDTO create(UserCreateDTO dto, String keycloakId) {
 
         User user = new User();
@@ -58,42 +82,66 @@ public class UserService {
 
         User saved = userRepository.save(user);
 
-        try {
-            Map<String, Object> request = new HashMap<>();
-            request.put("userId", saved.getId());
-            request.put("username", saved.getUsername());
-            request.put("email", saved.getEmail());
-            request.put("role", saved.getRole().name());
-
-            // PATIENT
-            if (saved.getRole() == Role.PATIENT) {
-                Map response = restTemplate.postForObject(
-                        journalBaseUrl + "/patients",
-                        request,
-                        Map.class
-                );
-                if (response != null && response.get("id") != null) {
-                    saved.setPatientId(String.valueOf(response.get("id")));
-                    userRepository.save(saved);
-                }
-            }
-            // DOCTOR / STAFF → PRACTITIONER
-            else {
-                Map response = restTemplate.postForObject(
-                        journalBaseUrl + "/practitioners",
-                        request,
-                        Map.class
-                );
-                if (response != null && response.get("id") != null) {
-                    saved.setPractitionerId(String.valueOf(response.get("id")));
-                    userRepository.save(saved);
-                }
-            }
-
-        } catch (Exception e) {
-            System.err.println("Journal-service error: " + e.getMessage());
+        // Skapa koppling direkt vid skapande
+        if (saved.getRole() == Role.PATIENT) {
+            provisionPatient(saved);
+        } else {
+            provisionPractitioner(saved);
         }
 
         return UserMapper.toDTO(saved);
+    }
+
+    /* =========================
+       INTERNAL HELPERS
+       ========================= */
+
+    private void provisionPatient(User user) {
+        try {
+            Map<String, Object> request = basePayload(user);
+
+            Map response = restTemplate.postForObject(
+                    journalBaseUrl + "/patients",
+                    request,
+                    Map.class
+            );
+
+            if (response != null && response.get("id") != null) {
+                user.setPatientId(String.valueOf(response.get("id")));
+                userRepository.save(user);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Kunde inte skapa patient", e);
+        }
+    }
+
+    private void provisionPractitioner(User user) {
+        try {
+            Map<String, Object> request = basePayload(user);
+
+            Map response = restTemplate.postForObject(
+                    journalBaseUrl + "/practitioners",
+                    request,
+                    Map.class
+            );
+
+            if (response != null && response.get("id") != null) {
+                user.setPractitionerId(String.valueOf(response.get("id")));
+                userRepository.save(user);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Kunde inte skapa practitioner", e);
+        }
+    }
+
+    private Map<String, Object> basePayload(User user) {
+        Map<String, Object> request = new HashMap<>();
+        request.put("userId", user.getId());
+        request.put("username", user.getUsername());
+        request.put("email", user.getEmail());
+        request.put("role", user.getRole().name());
+        return request;
     }
 }
