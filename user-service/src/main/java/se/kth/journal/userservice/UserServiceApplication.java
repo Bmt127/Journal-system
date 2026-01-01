@@ -20,6 +20,11 @@ public class UserServiceApplication {
     }
 
     @Bean
+    RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    @Bean
     CommandLineRunner userSeed(UserRepository repo, RestTemplate restTemplate) {
         return args -> {
 
@@ -43,10 +48,9 @@ public class UserServiceApplication {
                 req.put("userId", patient.getId());
                 req.put("username", patient.getUsername());
                 req.put("email", patient.getEmail());
-                req.put("role", patient.getRole().name());
 
                 Map response = restTemplate.postForObject(
-                        "http://journal-service:8084/patients",
+                        "http://journal-backend:8080/patients",
                         req,
                         Map.class
                 );
@@ -79,7 +83,7 @@ public class UserServiceApplication {
                 req.put("role", doctor.getRole().name());
 
                 Map response = restTemplate.postForObject(
-                        "http://journal-service:8084/practitioners",
+                        "http://journal-backend:8080/practitioners",
                         req,
                         Map.class
                 );
@@ -112,7 +116,7 @@ public class UserServiceApplication {
                 req.put("role", staff.getRole().name());
 
                 Map response = restTemplate.postForObject(
-                        "http://journal-service:8084/practitioners",
+                        "http://journal-backend:8080/practitioners",
                         req,
                         Map.class
                 );
