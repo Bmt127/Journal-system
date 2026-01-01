@@ -19,10 +19,6 @@ public class UserServiceApplication {
         SpringApplication.run(UserServiceApplication.class, args);
     }
 
-    @Bean
-    RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
 
     @Bean
     CommandLineRunner userSeed(UserRepository repo, RestTemplate restTemplate) {
