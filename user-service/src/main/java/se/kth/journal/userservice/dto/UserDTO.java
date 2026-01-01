@@ -7,6 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserDTO {
     private Long id;
+    private String keycloakId;
     private String username;
     private String email;
     private String role;

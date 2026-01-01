@@ -7,11 +7,12 @@ public class UserMapper {
     public static UserDTO toDTO(User user) {
         return new UserDTO(
                 user.getId(),
+                user.getKeycloakId(),
                 user.getUsername(),
                 user.getEmail(),
                 user.getRole().name(),
-                user.getPractitionerId(), // NEW
-                user.getPatientId()       // NEW
+                user.getPractitionerId(),
+                user.getPatientId()
         );
     }
 }
