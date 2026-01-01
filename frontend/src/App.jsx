@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import LoginPage from "./pages/LoginPage";
+import RoleRedirect from "./pages/RoleRedirect";
+import Logout from "./pages/logout";
 
 // Patient
 import PatientDashboard from "./pages/PatientDashBoard";
@@ -23,7 +24,7 @@ import StaffMessages from "./pages/StaffComponent/StaffMessages";
 import PatientSearch from "./pages/SearchComponent/PatientSearch";
 import PractitionerSearch from "./pages/SearchComponent/PractitionerSearch";
 
-// Image handling page
+// Image
 import ImageComponent from "./pages/ImageComponent/ImageComponent";
 
 function App() {
@@ -31,45 +32,51 @@ function App() {
         <Router>
             <Routes>
 
-                {/* Login */}
-                <Route path="/" element={<LoginPage />} />
-                <Route path="/login" element={<LoginPage />} />
+                {/* AUTO REDIRECT BASED ON ROLE */}
+                <Route path="/" element={<RoleRedirect />} />
+                <Route path="/login" element={<RoleRedirect />} />
 
-                {/* Patient */}
+                {/* LOGOUT */}
+                <Route path="/logout" element={<Logout />} />
+
+                {/* ===================== */}
+                {/* PATIENT */}
+                {/* ===================== */}
                 <Route path="/patient" element={<PatientDashboard />}>
                     <Route index element={<Navigate to="profile" />} />
                     <Route path="profile" element={<ProfilePage />} />
                     <Route path="observations" element={<ObservationPage />} />
                     <Route path="conditions" element={<ConditionPage />} />
                     <Route path="messages" element={<MessagePage />} />
-
-                    {/* Patient: image handling */}
                     <Route path="images" element={<ImageComponent />} />
                 </Route>
 
-                {/* Staff */}
-                <Route path="/staff" element={<StaffDashboard />}>
-                    <Route index element={<Navigate to="patients" />} />
-                    <Route path="patients" element={<StaffPatientList />} />
-                    <Route path="messages" element={<StaffMessages />} />
-                    <Route path="search/patients" element={<PatientSearch />} />
-                    <Route path="search/practitioners" element={<PractitionerSearch />} />
-
-                    {/* Staff: image handling */}
-                    <Route path="images" element={<ImageComponent />} />
-                </Route>
-
-                {/* Doctor */}
+                {/* ===================== */}
+                {/* DOCTOR */}
+                {/* ===================== */}
                 <Route path="/doctor" element={<DoctorDashboard />}>
                     <Route index element={<Navigate to="profile" />} />
                     <Route path="profile" element={<DoctorProfilePage />} />
                     <Route path="patients" element={<PatientList />} />
                     <Route path="messages" element={<DoctorMessagePage />} />
                     <Route path="search" element={<PatientSearch />} />
-
-                    {/* Doctor: image handling */}
                     <Route path="images" element={<ImageComponent />} />
                 </Route>
+
+                {/* ===================== */}
+                {/* STAFF */}
+                {/* ===================== */}
+                <Route path="/staff" element={<StaffDashboard />}>
+                    <Route index element={<Navigate to="patients" />} />
+                    <Route path="patients" element={<StaffPatientList />} />
+                    <Route path="messages" element={<StaffMessages />} />
+                    <Route path="search/patients" element={<PatientSearch />} />
+                    <Route path="search/practitioners" element={<PractitionerSearch />} />
+                    <Route path="images" element={<ImageComponent />} />
+                </Route>
+
+                {/* FALLBACK */}
+                <Route path="*" element={<Navigate to="/" />} />
 
             </Routes>
         </Router>

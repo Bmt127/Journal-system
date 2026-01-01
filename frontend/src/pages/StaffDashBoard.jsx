@@ -8,6 +8,7 @@ export default function StaffDashboard() {
 
     const handleTab = (index) => {
         setTabIndex(index);
+
         if (index === 0) navigate("/staff/patients");
         if (index === 1) navigate("/staff/messages");
         if (index === 2) navigate("/staff/search/patients");
@@ -15,9 +16,7 @@ export default function StaffDashboard() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("userId");
-        localStorage.removeItem("role");
-        navigate("/login");
+        navigate("/logout");
     };
 
     return (
@@ -62,6 +61,7 @@ export default function StaffDashboard() {
                     >
                         Logga ut
                     </div>
+
                 </div>
 
                 <div className="staff-tab-content">
