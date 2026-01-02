@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { journalApi } from "../../api/journalApi";
 import { userApi } from "../../api/userApi";
+import {keycloak} from "../../keycloak";
 import { Box, Typography } from "@mui/material";
 import "./ProfilePage.css";
 
@@ -9,75 +10,42 @@ export default function ProfilePage() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        let isMounted = true;
-
-        const token = keycloak.token;  // Hämta token från Keycloak
-
-        if (!token) {
-            console.error("Inget token tillgängligt.");
-            setError("Inget token tillgängligt.");
+        if (!keycloak.token) {
+            setError("Ej inloggad");
             return;
         }
 
-        // Skicka med tokenet i headern
         userApi.get("/users/me", {
             headers: {
-                Authorization: `Bearer ${token}`,  // Skicka med token i headern
-            }
+                Authorization: `Bearer ${keycloak.token}`,
+            },
         })
             .then(res => {
-                console.log("Användardata:", res.data); // Logga hela svaret för att se om patientId finns
-                const patientId = res.data?.patientId;
+                const patientId = res.data.patientId;
+                if (!patientId) throw new Error("patientId saknas");
 
-                if (!patientId) {
-                    throw new Error("patientId saknas på användaren");
-                }
-
-                // Anropa journalApi för att hämta patientdata
-                return journalApi.get(`/patients/${patientId}`);
+                return journalApi.get(`/patients/${patientId}`, {
+                    headers: {
+                        Authorization: `Bearer ${keycloak.token}`,
+                    },
+                });
             })
-            .then(res => {
-                if (isMounted) {
-                    setPatient(res.data);  // Sätt patientdata om den hämtades korrekt
-                }
-            })
+            .then(res => setPatient(res.data))
             .catch(err => {
-                console.error("ProfilePage error:", err);
-                if (isMounted) {
-                    setError("Kunde inte hämta patientdata");  // Sätt felmeddelande om något går fel
-                }
+                console.error(err);
+                setError("Kunde inte hämta patientdata");
             });
-
-        return () => {
-            isMounted = false;
-        };
     }, []);
 
-
-
-    if (error) {
-        return <p style={{ color: "red" }}>{error}</p>;
-    }
-
-    if (!patient) {
-        return <p>Laddar...</p>;
-    }
+    if (error) return <p style={{ color: "red" }}>{error}</p>;
+    if (!patient) return <p>Laddar...</p>;
 
     return (
         <Box className="profilebox">
-            <Typography variant="h5" sx={{ mb: 2, fontWeight: 600 }}>
-                Min profil
-            </Typography>
-
-            <Typography sx={{ mb: 1 }}>
-                <strong>ID:</strong> {patient.id}
-            </Typography>
-            <Typography sx={{ mb: 1 }}>
-                <strong>Användarnamn:</strong> {patient.username}
-            </Typography>
-            <Typography sx={{ mb: 1 }}>
-                <strong>Email:</strong> {patient.email}
-            </Typography>
+            <Typography variant="h5">Min profil</Typography>
+            <Typography>ID: {patient.id}</Typography>
+            <Typography>Användarnamn: {patient.username}</Typography>
+            <Typography>Email: {patient.email}</Typography>
         </Box>
     );
 }
