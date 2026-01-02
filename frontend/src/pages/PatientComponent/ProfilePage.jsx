@@ -11,26 +11,40 @@ export default function ProfilePage() {
     useEffect(() => {
         let isMounted = true;
 
-        userApi.get("/users/me")
+        const token = keycloak.token;  // Hämta token från Keycloak
+
+        if (!token) {
+            console.error("Inget token tillgängligt.");
+            setError("Inget token tillgängligt.");
+            return;
+        }
+
+        // Skicka med tokenet i headern
+        userApi.get("/users/me", {
+            headers: {
+                Authorization: `Bearer ${token}`,  // Skicka med token i headern
+            }
+        })
             .then(res => {
-                console.log("Användardata:", res.data); // Logga hela svaret
+                console.log("Användardata:", res.data); // Logga hela svaret för att se om patientId finns
                 const patientId = res.data?.patientId;
 
                 if (!patientId) {
                     throw new Error("patientId saknas på användaren");
                 }
 
+                // Anropa journalApi för att hämta patientdata
                 return journalApi.get(`/patients/${patientId}`);
             })
             .then(res => {
                 if (isMounted) {
-                    setPatient(res.data);
+                    setPatient(res.data);  // Sätt patientdata om den hämtades korrekt
                 }
             })
             .catch(err => {
                 console.error("ProfilePage error:", err);
                 if (isMounted) {
-                    setError("Kunde inte hämta patientdata");
+                    setError("Kunde inte hämta patientdata");  // Sätt felmeddelande om något går fel
                 }
             });
 
@@ -38,6 +52,7 @@ export default function ProfilePage() {
             isMounted = false;
         };
     }, []);
+
 
 
     if (error) {
