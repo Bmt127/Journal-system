@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import keycloak from "../keycloak"; // Importera keycloak som default-export
+// Ändring: Lägg till måsvingar runt keycloak
+import { keycloak } from "../keycloak";
 
 export default function RoleRedirect() {
     const navigate = useNavigate();
