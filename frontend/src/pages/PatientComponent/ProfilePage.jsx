@@ -13,6 +13,7 @@ export default function ProfilePage() {
 
         userApi.get("/users/me")
             .then(res => {
+                console.log("Användardata:", res.data); // Logga hela svaret
                 const patientId = res.data?.patientId;
 
                 if (!patientId) {
@@ -37,6 +38,7 @@ export default function ProfilePage() {
             isMounted = false;
         };
     }, []);
+
 
     if (error) {
         return <p style={{ color: "red" }}>{error}</p>;
