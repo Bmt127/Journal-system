@@ -4,13 +4,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.client.RestTemplate;
 import se.kth.journal.userservice.entity.Role;
 import se.kth.journal.userservice.entity.User;
 import se.kth.journal.userservice.repository.UserRepository;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @SpringBootApplication
 public class UserServiceApplication {
@@ -19,51 +15,15 @@ public class UserServiceApplication {
         SpringApplication.run(UserServiceApplication.class, args);
     }
 
-
     @Bean
-    CommandLineRunner userSeed(UserRepository repo, RestTemplate restTemplate) {
+    CommandLineRunner userSeed(UserRepository repo) {
         return args -> {
 
             if (repo.count() > 0) return;
 
-            System.out.println("Seeding default users...");
+            System.out.println("Seeding default staff users...");
 
-            // ======================
-            // PATIENT
-            // ======================
-            User patient = repo.save(User.builder()
-                    .keycloakId("seed-patient-bemnet")
-                    .email("bemnet@example.com")
-                    .username("bemnet")
-                    .role(Role.PATIENT)
-                    .build()
-            );
-
-            try {
-                Map<String, Object> req = new HashMap<>();
-                req.put("userId", patient.getId());
-                req.put("username", patient.getUsername());
-                req.put("email", patient.getEmail());
-
-                Map response = restTemplate.postForObject(
-                        "http://journal-backend:8080/patients",
-                        req,
-                        Map.class
-                );
-
-                if (response != null && response.get("id") != null) {
-                    patient.setPatientId(String.valueOf(response.get("id")));
-                    repo.save(patient);
-                }
-
-            } catch (Exception e) {
-                System.out.println("Patient creation failed: " + e.getMessage());
-            }
-
-            // ======================
-            // DOCTOR
-            // ======================
-            User doctor = repo.save(User.builder()
+            repo.save(User.builder()
                     .keycloakId("seed-doctor-1")
                     .email("doctor@example.com")
                     .username("doctor")
@@ -71,60 +31,13 @@ public class UserServiceApplication {
                     .build()
             );
 
-            try {
-                Map<String, Object> req = new HashMap<>();
-                req.put("userId", doctor.getId());
-                req.put("username", doctor.getUsername());
-                req.put("email", doctor.getEmail());
-                req.put("role", doctor.getRole().name());
-
-                Map response = restTemplate.postForObject(
-                        "http://journal-backend:8080/practitioners",
-                        req,
-                        Map.class
-                );
-
-                if (response != null && response.get("id") != null) {
-                    doctor.setPractitionerId(String.valueOf(response.get("id")));
-                    repo.save(doctor);
-                }
-
-            } catch (Exception e) {
-                System.out.println("Doctor creation failed: " + e.getMessage());
-            }
-
-            // ======================
-            // STAFF
-            // ======================
-            User staff = repo.save(User.builder()
+            repo.save(User.builder()
                     .keycloakId("seed-staff-1")
                     .email("staff@example.com")
                     .username("staff")
                     .role(Role.STAFF)
                     .build()
             );
-
-            try {
-                Map<String, Object> req = new HashMap<>();
-                req.put("userId", staff.getId());
-                req.put("username", staff.getUsername());
-                req.put("email", staff.getEmail());
-                req.put("role", staff.getRole().name());
-
-                Map response = restTemplate.postForObject(
-                        "http://journal-backend:8080/practitioners",
-                        req,
-                        Map.class
-                );
-
-                if (response != null && response.get("id") != null) {
-                    staff.setPractitionerId(String.valueOf(response.get("id")));
-                    repo.save(staff);
-                }
-
-            } catch (Exception e) {
-                System.out.println("Staff creation failed: " + e.getMessage());
-            }
 
             System.out.println("Seeding complete.");
         };

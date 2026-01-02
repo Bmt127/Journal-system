@@ -23,7 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
 
-    @Value("${journal.service.url:http://journal-service:8084}")
+    @Value("${journal.service.url:http://journal-backend:8080}")
     private String journalBaseUrl;
 
     /* =========================
@@ -43,23 +43,15 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    /**
-     * Hämtar användare via Keycloak-id.
-     * Saknas patientId / practitionerId → skapas automatiskt.
-     */
     public UserDTO getByKeycloakId(String keycloakId) {
 
         User user = userRepository.findByKeycloakId(keycloakId)
-                .orElseThrow(() ->
-                        new RuntimeException("User not found for keycloakId: " + keycloakId)
-                );
+                .orElseGet(() -> createUserFromKeycloak(keycloakId));
 
-        // PATIENT → skapa patient om saknas
         if (user.getRole() == Role.PATIENT && user.getPatientId() == null) {
             provisionPatient(user);
         }
 
-        // DOCTOR / STAFF → skapa practitioner om saknas
         if ((user.getRole() == Role.DOCTOR || user.getRole() == Role.STAFF)
                 && user.getPractitionerId() == null) {
             provisionPractitioner(user);
@@ -82,7 +74,6 @@ public class UserService {
 
         User saved = userRepository.save(user);
 
-        // Skapa koppling direkt vid skapande
         if (saved.getRole() == Role.PATIENT) {
             provisionPatient(saved);
         } else {
@@ -96,43 +87,44 @@ public class UserService {
        INTERNAL HELPERS
        ========================= */
 
+    private User createUserFromKeycloak(String keycloakId) {
+        User user = User.builder()
+                .keycloakId(keycloakId)
+                .username("auto-" + keycloakId.substring(0, 8))
+                .email("unknown@keycloak")
+                .role(Role.PATIENT)
+                .build();
+
+        return userRepository.save(user);
+    }
+
     private void provisionPatient(User user) {
-        try {
-            Map<String, Object> request = basePayload(user);
+        Map<String, Object> request = basePayload(user);
 
-            Map response = restTemplate.postForObject(
-                    journalBaseUrl + "/patients",
-                    request,
-                    Map.class
-            );
+        Map response = restTemplate.postForObject(
+                journalBaseUrl + "/patients",
+                request,
+                Map.class
+        );
 
-            if (response != null && response.get("id") != null) {
-                user.setPatientId(String.valueOf(response.get("id")));
-                userRepository.save(user);
-            }
-
-        } catch (Exception e) {
-            throw new RuntimeException("Kunde inte skapa patient", e);
+        if (response != null && response.get("id") != null) {
+            user.setPatientId(String.valueOf(response.get("id")));
+            userRepository.save(user);
         }
     }
 
     private void provisionPractitioner(User user) {
-        try {
-            Map<String, Object> request = basePayload(user);
+        Map<String, Object> request = basePayload(user);
 
-            Map response = restTemplate.postForObject(
-                    journalBaseUrl + "/practitioners",
-                    request,
-                    Map.class
-            );
+        Map response = restTemplate.postForObject(
+                journalBaseUrl + "/practitioners",
+                request,
+                Map.class
+        );
 
-            if (response != null && response.get("id") != null) {
-                user.setPractitionerId(String.valueOf(response.get("id")));
-                userRepository.save(user);
-            }
-
-        } catch (Exception e) {
-            throw new RuntimeException("Kunde inte skapa practitioner", e);
+        if (response != null && response.get("id") != null) {
+            user.setPractitionerId(String.valueOf(response.get("id")));
+            userRepository.save(user);
         }
     }
 
