@@ -1,17 +1,15 @@
 import axios from "axios";
-import { attachToken } from "./attachToken.js";
+import { attachToken } from "./attachToken";
+import { API_CONFIG } from "./apiConfig";
 
-const imageApi = axios.create({
-    baseURL: import.meta.env.VITE_IMAGE_API_URL
+export const imageApi = axios.create({
+    baseURL: API_CONFIG.IMAGE,
 });
 
 attachToken(imageApi);
 
-// Upload handler
 export function uploadImage(formData) {
     return imageApi.post("/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
+        headers: { "Content-Type": "multipart/form-data" },
     });
 }
-
-export { imageApi };

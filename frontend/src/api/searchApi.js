@@ -1,8 +1,9 @@
 import axios from "axios";
-import { attachToken } from "./attachToken.js";
+import { attachToken } from "./attachToken";
+import { API_CONFIG } from "./apiConfig";
 
 export const searchApi = axios.create({
-    baseURL: import.meta.env.VITE_SEARCH_API_URL
+    baseURL: API_CONFIG.SEARCH,
 });
 
 attachToken(searchApi);

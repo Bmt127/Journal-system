@@ -1,8 +1,9 @@
 import axios from "axios";
-import { attachToken } from "./attachToken.js";
+import { attachToken } from "./attachToken";
+import { API_CONFIG } from "./apiConfig";
 
 export const journalApi = axios.create({
-    baseURL: import.meta.env.VITE_JOURNAL_API_URL
+    baseURL: API_CONFIG.JOURNAL,
 });
 
 attachToken(journalApi);
