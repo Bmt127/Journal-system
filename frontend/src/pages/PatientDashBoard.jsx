@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Tabs, Tab } from "@mui/material";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
-import keycloak from "../keycloak";
+// ÄNDRA HÄR:
+import { keycloak } from "../keycloak";
 
 export default function PatientDashboard() {
     const [value, setValue] = useState(0);

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import "./DoctorDashboard.css";
-import keycloak from "../keycloak";
+import {keycloak} from "../keycloak";
 
 export default function DoctorDashboard() {
     const [tabIndex, setTabIndex] = useState(0);
