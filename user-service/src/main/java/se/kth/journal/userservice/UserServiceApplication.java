@@ -15,31 +15,31 @@ public class UserServiceApplication {
         SpringApplication.run(UserServiceApplication.class, args);
     }
 
-    @Bean
-    CommandLineRunner userSeed(UserRepository repo) {
-        return args -> {
-
-            if (repo.count() > 0) return;
-
-            System.out.println("Seeding default staff users...");
-
-            repo.save(User.builder()
-                    .keycloakId("seed-doctor-1")
-                    .email("doctor@example.com")
-                    .username("doctor")
-                    .role(Role.DOCTOR)
-                    .build()
-            );
-
-            repo.save(User.builder()
-                    .keycloakId("seed-staff-1")
-                    .email("staff@example.com")
-                    .username("staff")
-                    .role(Role.STAFF)
-                    .build()
-            );
-
-            System.out.println("Seeding complete.");
-        };
-    }
+//    @Bean
+//    CommandLineRunner userSeed(UserRepository repo) {
+//        return args -> {
+//
+//            if (repo.count() > 0) return;
+//
+//            System.out.println("Seeding default staff users...");
+//
+//            repo.save(User.builder()
+//                    .keycloakId("seed-doctor-1")
+//                    .email("doctor@example.com")
+//                    .username("doctor")
+//                    .role(Role.DOCTOR)
+//                    .build()
+//            );
+//
+//            repo.save(User.builder()
+//                    .keycloakId("seed-staff-1")
+//                    .email("staff@example.com")
+//                    .username("staff")
+//                    .role(Role.STAFF)
+//                    .build()
+//            );
+//
+//            System.out.println("Seeding complete.");
+//        };
+//    }
 }
