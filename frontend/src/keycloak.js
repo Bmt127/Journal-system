@@ -1,6 +1,6 @@
 import Keycloak from "keycloak-js";
 
-// Skapa en Keycloak-instans
+// Skapa och initiera Keycloak-instansen
 const keycloak = new Keycloak({
     url: "https://keycloakk.app.cloud.cbh.kth.se",
     realm: "healthcare-realm",
@@ -15,9 +15,13 @@ const initKeycloak = () => {
     });
 };
 
-// Kontrollera patientId i token
+// Funktion för att hämta patientId från token
 const getPatientId = () => {
     return keycloak.tokenParsed?.patientId;
 };
 
-export { keycloak, initKeycloak, getPatientId };
+// Exportera keycloak som standardexport
+export default keycloak;
+
+// Exportera initKeycloak och getPatientId som namngivna exporter
+export { initKeycloak, getPatientId };

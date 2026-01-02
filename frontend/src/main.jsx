@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { keycloak, initKeycloak, getPatientId } from "./keycloak"; // Importera keycloak.js
 
+// Initiera Keycloak
 initKeycloak().then((authenticated) => {
     if (!authenticated) {
         keycloak.login(); // Om användaren inte är autentiserad, logga in
