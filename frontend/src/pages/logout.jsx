@@ -1,12 +1,10 @@
 import { useEffect } from "react";
-import keycloak from "../keycloak";
+import { keycloak } from "../keycloak"; // Lägg till måsvingarna här!
 
 export default function Logout() {
     useEffect(() => {
-        keycloak.logout({
-            redirectUri: window.location.origin,
-        });
+        keycloak.logout({ redirectUri: window.location.origin });
     }, []);
 
-    return null;
+    return <div>Logging out...</div>;
 }
