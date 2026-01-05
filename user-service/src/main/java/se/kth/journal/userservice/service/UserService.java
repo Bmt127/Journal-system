@@ -53,7 +53,6 @@ public class UserService {
         return UserMapper.toDTO(user);
     }
 
-
     // CREATE USER + CREATE PATIENT OR PRACTITIONER IN JOURNAL-SERVICE
     public UserDTO create(UserCreateDTO dto) {
 
@@ -71,6 +70,10 @@ public class UserService {
             request.put("username", saved.getUsername());
             request.put("email", saved.getEmail());
             request.put("role", saved.getRole().name());
+
+            // FIX: skicka namn korrekt
+            request.put("firstName", dto.getFirstName());
+            request.put("lastName", dto.getLastName());
 
             // ------------ PATIENT ------------
             if (saved.getRole() == Role.PATIENT) {
