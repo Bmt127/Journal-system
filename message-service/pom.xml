@@ -86,6 +86,19 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Spring Kafka -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
+        <!-- Kafka Client (Producer and Consumer) -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>3.3.1</version>
+        </dependency>
+
         <!-- Test (disabled) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

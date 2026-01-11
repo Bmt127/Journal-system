@@ -5,49 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5af4467c-128c-45d6-b701-b164fa3efa4c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend/src/api/axiosConfig.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/auth/RoleRoute.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/auth/keycloak.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/api.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/imageApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/imageApi.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/journalApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/journalApi.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/messageApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/messageApi.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/searchApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/searchApi.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/userApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/userApi.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/main.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/main.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DoctorComponent/DoctorMessagePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DoctorComponent/DoctorMessagePage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DoctorComponent/DoctorProfilePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DoctorComponent/DoctorProfilePage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DoctorComponent/PatientList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DoctorComponent/PatientList.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DoctorDashBoard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DoctorDashBoard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/ImageComponent/ImageComponent.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/ImageComponent/ImageComponent.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/LoginPage.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PatientComponent/ConditionPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PatientComponent/ConditionPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PatientComponent/MessagePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PatientComponent/MessagePage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PatientComponent/ObservationPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PatientComponent/ObservationPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PatientComponent/ProfilePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PatientComponent/ProfilePage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PatientDashBoard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PatientDashBoard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/SearchComponent/PatientSearch.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/SearchComponent/PatientSearch.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/SearchComponent/PractitionerSearch.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/SearchComponent/PractitionerSearch.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/StaffComponent/StaffMessages.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/StaffComponent/StaffMessages.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/StaffComponent/StaffPatientList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/StaffComponent/StaffPatientList.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/StaffDashBoard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/StaffDashBoard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/logout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/logout.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image-service/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-service/server.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/mysql/init.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/search-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/MyRemoteService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/controller/PatientSearchController.java" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/controller/PatientSearchController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/dto/PatientDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/dto/PatientDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/dto/PractitionerDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/dto/PractitionerDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/service/JournalClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/service/JournalClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/service/MyRemoteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/service/MyRemoteService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/search-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -240,7 +200,7 @@
       <workItem from="1767305257298" duration="6968000" />
       <workItem from="1767390296359" duration="5533000" />
       <workItem from="1767614044196" duration="2354000" />
-      <workItem from="1768083573253" duration="28659000" />
+      <workItem from="1768083573253" duration="30628000" />
     </task>
     <servers />
   </component>

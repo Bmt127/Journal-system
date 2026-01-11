@@ -6,6 +6,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import se.kth.journal.messageservice.dto.*;
 import se.kth.journal.messageservice.service.MessageService;
+import se.kth.journal.messageservice.service.KafkaProducerService;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 public class MessageController {
 
     private final MessageService messageService;
+    private final KafkaProducerService kafkaProducerService;
 
     private String getKeycloakId(Authentication auth) {
         Jwt jwt = (Jwt) auth.getPrincipal();
@@ -39,8 +41,13 @@ public class MessageController {
         return messageService.getConversation(getKeycloakId(auth), otherKeycloakId);
     }
 
+    // Skicka meddelande till Kafka istället för direkt i databasen
     @PostMapping("/me")
     public MessageDTO send(@RequestBody MessageCreateDTO dto, Authentication auth) {
+        // Skicka meddelandet till Kafka
+        kafkaProducerService.sendMessage(dto);
+
+        // Spara meddelandet i databasen (om du vill)
         return messageService.send(getKeycloakId(auth), dto);
     }
 }
