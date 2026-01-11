@@ -53,6 +53,8 @@ public class PatientSearchController {
 
     // ===============================
     // DOCTOR → THEIR PATIENTS
+
+
     // ===============================
     @GET
     @Path("/practitioners/{id}/patients")
