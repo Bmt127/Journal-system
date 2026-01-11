@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import "./StaffDashBoard.css";
 
-export default function StaffDashboard() {
+export default function StaffDashboard({keycloak}) {
     const [tabIndex, setTabIndex] = useState(0);
     const navigate = useNavigate();
 
@@ -15,10 +15,10 @@ export default function StaffDashboard() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("userId");
-        localStorage.removeItem("role");
-        navigate("/login");
-    };
+        keycloak.logout({
+            redirectUri: window.location.origin
+        });
+    }
 
     return (
         <div className="staff-dashboard-container">

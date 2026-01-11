@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import api from "../../api/api";
+import { userApi } from "../../api/userApi";
+import { messageApi } from "../../api/messageApi";
 import {
     TextareaAutosize,
     Button,
@@ -15,78 +16,78 @@ import "./StaffMessages.css";
 export default function StaffMessages() {
     const [conversation, setConversation] = useState([]);
     const [users, setUsers] = useState([]);
-    const [selectedUserId, setSelectedUserId] = useState("");
+    const [selectedUser, setSelectedUser] = useState(null);
     const [content, setContent] = useState("");
     const [error, setError] = useState(null);
 
-    const userId = Number(localStorage.getItem("userId"));
     const endRef = useRef(null);
 
-    // Load all users
+    /* -----------------------------
+       Load users
+    ------------------------------*/
     useEffect(() => {
-        api.get("/users")
-            .then(res => setUsers(res.data))
-            .catch(() => setError("Kunde inte hämta användare"));
+        const loadUsers = async () => {
+            try {
+                const res = await userApi.get("/users");
+                setUsers(res.data);
+            } catch {
+                setError("Kunde inte hämta användare");
+            }
+        };
+        loadUsers();
     }, []);
 
-    // Load conversation between staff and selected user
-    const loadConversation = useCallback(async (otherId) => {
-        if (!otherId) return;
+    /* -----------------------------
+       Load conversation
+    ------------------------------*/
+    const loadConversation = useCallback(async (otherKeycloakId) => {
+        if (!otherKeycloakId) {
+            setConversation([]);
+            return;
+        }
 
         try {
-            const [sent, received] = await Promise.all([
-                api.get(`/messages/sender/${userId}`),
-                api.get(`/messages/receiver/${userId}`)
-            ]);
-
-            const combined = [...sent.data, ...received.data];
-
-            const conv = combined
-                .filter(m =>
-                    Number(m.senderId) === Number(otherId) ||
-                    Number(m.receiverId) === Number(otherId)
-                )
-                .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-            setConversation(conv);
-
-        } catch (err) {
+            const res = await messageApi.get(`/messages/me/conversation/${otherKeycloakId}`);
+            setConversation(res.data || []);
+        } catch {
             setError("Kunde inte ladda konversation");
         }
-    }, [userId]);
+    }, []);
 
-    // Reload when user selected
     useEffect(() => {
-        if (selectedUserId) loadConversation(selectedUserId);
-    }, [selectedUserId, loadConversation]);
+        if (selectedUser) {
+            loadConversation(selectedUser.keycloakId);
+        }
+    }, [selectedUser, loadConversation]);
 
-    // Auto scroll to bottom
+    /* -----------------------------
+       Auto scroll
+    ------------------------------*/
     useEffect(() => {
         endRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [conversation]);
 
+    /* -----------------------------
+       Send
+    ------------------------------*/
     const handleSend = async () => {
-        if (!content.trim() || !selectedUserId) return;
+        if (!content.trim() || !selectedUser) return;
 
         try {
-            await api.post("/messages", {
-                senderId: userId,
-                receiverId: Number(selectedUserId),
+            await messageApi.post("/messages/me", {
+                receiverKeycloakId: selectedUser.keycloakId,
                 content: content.trim()
             });
 
             setContent("");
-            loadConversation(selectedUserId);
-
+            await loadConversation(selectedUser.keycloakId);
         } catch {
             setError("Kunde inte skicka meddelande");
         }
     };
 
-    const getSenderLabel = (senderId) => {
-        if (Number(senderId) === Number(userId)) return "Du";
-
-        const u = users.find(x => Number(x.id) === Number(senderId));
+    const getSenderName = (keycloakId) => {
+        const u = users.find(x => x.keycloakId === keycloakId);
         return u ? `${u.username} (${u.role})` : "Okänd";
     };
 
@@ -99,20 +100,23 @@ export default function StaffMessages() {
             <FormControl fullWidth size="small" sx={{ mb: 3 }}>
                 <InputLabel>Välj person</InputLabel>
                 <Select
-                    value={selectedUserId}
-                    onChange={(e) => setSelectedUserId(Number(e.target.value))}
+                    value={selectedUser ? selectedUser.keycloakId : ""}
+                    onChange={(e) => {
+                        const u = users.find(x => x.keycloakId === e.target.value);
+                        setSelectedUser(u);
+                    }}
                 >
                     {users
-                        .filter(u => Number(u.id) !== Number(userId)) // show all except current staff
+                        .filter(u => u.role === "PATIENT" || u.role === "DOCTOR")
                         .map(u => (
-                            <MenuItem key={u.id} value={u.id}>
+                            <MenuItem key={u.keycloakId} value={u.keycloakId}>
                                 {u.username} ({u.role})
                             </MenuItem>
                         ))}
                 </Select>
             </FormControl>
 
-            {selectedUserId && (
+            {selectedUser && (
                 <>
                     <div className="message-list">
                         {conversation.length === 0 && (
@@ -122,10 +126,14 @@ export default function StaffMessages() {
                         {conversation.map(m => (
                             <Paper
                                 key={m.id}
-                                className={`message-item ${Number(m.senderId) === Number(userId) ? "sent" : "received"}`}
+                                className={`message-item ${
+                                    m.senderKeycloakId === selectedUser.keycloakId
+                                        ? "received"
+                                        : "sent"
+                                }`}
                             >
                                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                                    {getSenderLabel(m.senderId)}:
+                                    {getSenderName(m.senderKeycloakId)}
                                 </Typography>
                                 <Typography>{m.content}</Typography>
                                 <Typography variant="caption">

@@ -22,31 +22,20 @@ public class PatientService {
         return repo.findById(id);
     }
 
-    public Optional<Patient> getByUserId(Long userId) {
-        return repo.findByUserId(userId);
+    public Optional<Patient> getByKeycloakId(String keycloakId) {
+        return repo.findByKeycloakId(keycloakId);
     }
 
-    public Patient createPatient(Long userId, String username, String email,
+
+    public Patient createPatient(String keycloakId, String username, String email,
                                  String firstName, String lastName) {
 
         Patient p = Patient.builder()
-                .userId(userId)
+                .keycloakId(keycloakId)
                 .username(username)
                 .email(email)
                 .firstName(firstName)
                 .lastName(lastName)
-                .build();
-
-        return repo.save(p);
-    }
-
-    // används bara som fallback om du skulle vilja
-    public Patient createPatient(Long userId, String username, String email) {
-
-        Patient p = Patient.builder()
-                .userId(userId)
-                .username(username)
-                .email(email)
                 .build();
 
         return repo.save(p);

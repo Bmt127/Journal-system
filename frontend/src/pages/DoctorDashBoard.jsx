@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import "./DoctorDashboard.css";
 
-export default function DoctorDashboard() {
+export default function DoctorDashboard({keycloak}) {
     const [tabIndex, setTabIndex] = useState(0);
     const navigate = useNavigate();
 
@@ -17,10 +17,11 @@ export default function DoctorDashboard() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("userId");
-        localStorage.removeItem("role");
-        navigate("/login");
-    };
+        keycloak.logout({
+            redirectUri: window.location.origin
+        });
+    }
+
 
     return (
         <div className="doctor-dashboard-container">

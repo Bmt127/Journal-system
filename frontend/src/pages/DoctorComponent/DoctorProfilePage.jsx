@@ -9,38 +9,31 @@ export default function DoctorProfilePage() {
     const [user, setUser] = useState(null);
     const [error, setError] = useState(null);
 
-    const userId = localStorage.getItem("userId");
-
     useEffect(() => {
-        if (!userId) {
-            setError("Ingen användare inloggad");
-            return;
-        }
-
         async function load() {
             try {
-                // 1. Hämta user
-                const userRes = await userApi.get(`/users/${userId}`);
-                setUser(userRes.data);
+                // 1. Hämta inloggad användare via token
+                const userRes = await userApi.get("/users/me");
+                const u = userRes.data;
+                setUser(u);
 
-                const practitionerId = userRes.data.practitionerId;
-                if (!practitionerId) {
-                    setError("Ingen practitioner kopplad till användaren.");
+                if (u.role !== "DOCTOR") {
+                    setError("Du är inte inloggad som läkare.");
                     return;
                 }
 
-                // 2. Hämta practitioner
-                const pr = await journalApi.get(`/practitioners/${practitionerId}`);
+                if (!u.practitionerId) {
+                    setError("Ingen practitioner är kopplad till ditt konto.");
+                    return;
+                }
+
+                // 2. Hämta practitioner från journal-service
+                const pr = await journalApi.get(`/practitioners/${u.practitionerId}`);
                 const p = pr.data;
 
-                const givenName = p.firstName || "";
-                const familyName = p.lastName || "";
-
-
                 setDoctor({
-                    givenName,
-                    familyName,
-                    raw: p
+                    givenName: p.firstName || "",
+                    familyName: p.lastName || ""
                 });
 
             } catch (err) {
@@ -50,7 +43,7 @@ export default function DoctorProfilePage() {
         }
 
         load();
-    }, [userId]);
+    }, []);
 
     if (error) return <p style={{ color: "red" }}>{error}</p>;
     if (!doctor || !user) return <p>Laddar...</p>;
@@ -61,10 +54,9 @@ export default function DoctorProfilePage() {
                 Min profil
             </Typography>
 
-            <Typography sx={{ mb: 1 }}><strong>Förnamn:</strong> {doctor.givenName}</Typography>
-            <Typography sx={{ mb: 1 }}><strong>Efternamn:</strong> {doctor.familyName}</Typography>
-            <Typography sx={{ mb: 1 }}><strong>E-post:</strong> {user.email}</Typography>
-
+            <Typography><strong>Förnamn:</strong> {doctor.givenName}</Typography>
+            <Typography><strong>Efternamn:</strong> {doctor.familyName}</Typography>
+            <Typography><strong>E-post:</strong> {user.email}</Typography>
             <Typography><strong>Roll:</strong> {user.role}</Typography>
         </Box>
     );

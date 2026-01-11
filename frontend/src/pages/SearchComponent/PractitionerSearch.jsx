@@ -11,28 +11,15 @@ export default function PractitionerSearch() {
     const [loadingPatients, setLoadingPatients] = useState(false);
     const [error, setError] = useState("");
 
+    /* -------------------------
+       Load all practitioners
+    ------------------------- */
     useEffect(() => {
         setLoadingPract(true);
         searchApi.get("/search/practitioners")
             .then(res => {
-                const data = Array.isArray(res.data) ? res.data : (res.data ? [res.data] : []);
-                const mapped = data.map(p => {
-                    const name = (p.firstName || "") + (p.lastName ? " " + p.lastName : "");
-                    let givenName = "", familyName = "";
-                    if (name.trim()) {
-                        const parts = name.trim().split(" ");
-                        givenName = parts.slice(0, -1).join(" ");
-                        familyName = parts.slice(-1).join(" ");
-                    } else {
-                        givenName = p.username || "";
-                    }
-                    return {
-                        id: p.id,
-                        givenName,
-                        familyName
-                    };
-                });
-                setPractitioners(mapped);
+                const data = Array.isArray(res.data) ? res.data : [];
+                setPractitioners(data);
                 setError("");
             })
             .catch(err => {
@@ -42,6 +29,9 @@ export default function PractitionerSearch() {
             .finally(() => setLoadingPract(false));
     }, []);
 
+    /* -------------------------
+       Load patients for practitioner
+    ------------------------- */
     const loadPatients = async (id) => {
         setSelected(id);
         setPatients([]);
@@ -50,24 +40,8 @@ export default function PractitionerSearch() {
 
         try {
             const res = await searchApi.get(`/search/practitioners/${id}/patients`);
-            const data = Array.isArray(res.data) ? res.data : (res.data ? [res.data] : []);
-            const mapped = data.map(pt => {
-                const name = (pt.firstName || "") + (pt.lastName ? " " + pt.lastName : "");
-                let givenName = "", familyName = "";
-                if (name.trim()) {
-                    const parts = name.trim().split(" ");
-                    givenName = parts.slice(0, -1).join(" ");
-                    familyName = parts.slice(-1).join(" ");
-                } else {
-                    givenName = pt.username || "";
-                }
-                return {
-                    id: pt.id,
-                    givenName,
-                    familyName
-                };
-            });
-            setPatients(mapped);
+            const data = Array.isArray(res.data) ? res.data : [];
+            setPatients(data);
         } catch (err) {
             console.error("Kunde inte hämta kopplade patienter:", err);
             setError("Kunde inte hämta kopplade patienter.");
@@ -76,25 +50,40 @@ export default function PractitionerSearch() {
         }
     };
 
+    /* -------------------------
+       Render
+    ------------------------- */
     return (
         <div className="search-container">
-            <Typography variant="h5" sx={{ mb: 2 }}>Sök vårdpersonal</Typography>
+            <Typography variant="h5" sx={{ mb: 2 }}>
+                Vårdpersonal
+            </Typography>
 
-            {loadingPract ? <CircularProgress /> : null}
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {loadingPract && <CircularProgress />}
+            {error && <Typography color="error">{error}</Typography>}
 
             <div className="practitioner-list" style={{ display: "grid", gap: 12 }}>
-                {practitioners.map((p) => (
+                {practitioners.map(p => (
                     <Paper
                         key={p.id}
                         className={`search-result-card ${selected === p.id ? "active" : ""}`}
                         sx={{ padding: 2 }}
                     >
-                        <Typography variant="h6">{p.givenName} {p.familyName}</Typography>
-                        <Typography><strong>ID:</strong> {p.id}</Typography>
+                        <Typography variant="h6">
+                            {p.firstName} {p.lastName}
+                        </Typography>
 
-                        <Button sx={{ mt: 1 }} variant="outlined" onClick={() => loadPatients(p.id)}>
-                            {selected === p.id && loadingPatients ? <CircularProgress size={18} /> : "Visa patienter"}
+                        <Typography>ID: {p.id}</Typography>
+                        <Typography>Email: {p.email}</Typography>
+
+                        <Button
+                            sx={{ mt: 1 }}
+                            variant="outlined"
+                            onClick={() => loadPatients(p.id)}
+                        >
+                            {selected === p.id && loadingPatients
+                                ? <CircularProgress size={18} />
+                                : "Visa patienter"}
                         </Button>
                     </Paper>
                 ))}
@@ -102,16 +91,21 @@ export default function PractitionerSearch() {
 
             {selected && (
                 <div className="patient-result-section" style={{ marginTop: 16 }}>
-                    <Typography variant="h6" sx={{ mt: 1 }}>
+                    <Typography variant="h6">
                         Patienter kopplade till denna vårdgivare
                     </Typography>
 
-                    {patients.length === 0 && !loadingPatients && <Typography>Inga patienter funna.</Typography>}
+                    {!loadingPatients && patients.length === 0 &&
+                        <Typography>Inga patienter funna.</Typography>
+                    }
 
-                    {patients.map((pt) => (
-                        <Paper key={pt.id} className="search-result-card" sx={{ padding: 2, mt: 1 }}>
-                            <Typography>{pt.givenName} {pt.familyName}</Typography>
+                    {patients.map(pt => (
+                        <Paper key={pt.id} sx={{ padding: 2, mt: 1 }}>
+                            <Typography variant="body1">
+                                {pt.firstName} {pt.lastName}
+                            </Typography>
                             <Typography>ID: {pt.id}</Typography>
+                            <Typography>Email: {pt.email}</Typography>
                         </Paper>
                     ))}
                 </div>

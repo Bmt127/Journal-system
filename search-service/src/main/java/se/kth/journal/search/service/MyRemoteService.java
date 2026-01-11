@@ -2,6 +2,8 @@ package se.kth.journal.search.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Context;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -32,13 +34,20 @@ public class MyRemoteService {
     @RestClient
     JournalClient journalClient;
 
+    @Context
+    HttpHeaders headers;
+
+    private String auth() {
+        return headers.getHeaderString("Authorization");
+    }
+
     // ----------------------------
     // PATIENT SEARCH BY NAME
     // ----------------------------
     public Uni<List<PatientDTO>> searchPatientsByName(String query) {
         return Uni.createFrom().item(() -> {
             try {
-                String json = journalClient.getAllPatients();
+                String json = journalClient.getAllPatients(auth());
                 JsonNode arr = mapper.readTree(json);
 
                 if (arr == null || !arr.isArray()) {
@@ -56,14 +65,12 @@ public class MyRemoteService {
                     String username = p.path("username").asText("");
 
                     String full = (first + " " + last + " " + username).toLowerCase();
-
                     if (full.contains(q)) {
                         out.add(new PatientDTO(id, first, last, email));
                     }
                 }
 
                 return out;
-
             } catch (Exception e) {
                 LOG.error("searchPatientsByName failed", e);
                 return List.<PatientDTO>of();
@@ -86,20 +93,17 @@ public class MyRemoteService {
                         patients.stream()
                                 .filter(p -> {
                                     try {
-                                        String condJson =
-                                                journalClient.getConditionsByPatient(p.id);
+                                        String condJson = journalClient.getConditionsByPatient(p.id, auth());
                                         JsonNode arr = mapper.readTree(condJson);
 
                                         if (arr == null || !arr.isArray()) return false;
 
                                         for (JsonNode c : arr) {
-                                            String diag =
-                                                    c.path("diagnosis").asText("").toLowerCase();
-                                            if (diag.contains(q)) return true;
+                                            if (c.path("diagnosis").asText("").toLowerCase().contains(q)) {
+                                                return true;
+                                            }
                                         }
-                                    } catch (Exception e) {
-                                        LOG.debug("Condition lookup failed", e);
-                                    }
+                                    } catch (Exception ignored) {}
                                     return false;
                                 })
                                 .collect(Collectors.toList())
@@ -112,7 +116,7 @@ public class MyRemoteService {
     public Uni<List<PractitionerDTO>> getAllPractitioners() {
         return Uni.createFrom().item(() -> {
             try {
-                String json = journalClient.getAllPractitioners();
+                String json = journalClient.getAllPractitioners(auth());
                 JsonNode arr = mapper.readTree(json);
 
                 if (arr == null || !arr.isArray()) {
@@ -120,18 +124,16 @@ public class MyRemoteService {
                 }
 
                 List<PractitionerDTO> out = new ArrayList<>();
-
                 for (JsonNode p : arr) {
-                    Long id = p.path("id").asLong();
-                    String first = p.path("firstName").asText("");
-                    String last = p.path("lastName").asText("");
-                    String email = p.path("email").asText("");
-
-                    out.add(new PractitionerDTO(id, first, last, email));
+                    out.add(new PractitionerDTO(
+                            p.path("id").asLong(),
+                            p.path("firstName").asText(""),
+                            p.path("lastName").asText(""),
+                            p.path("email").asText("")
+                    ));
                 }
 
                 return out;
-
             } catch (Exception e) {
                 LOG.error("getAllPractitioners failed", e);
                 return List.<PractitionerDTO>of();
@@ -140,13 +142,12 @@ public class MyRemoteService {
     }
 
     // ----------------------------
-    // PRACTITIONER → PATIENT LIST
+    // PRACTITIONER → PATIENTS
     // ----------------------------
     public Uni<List<PatientDTO>> searchPatientsByPractitioner(Long practitionerId) {
         return Uni.createFrom().item(() -> {
             try {
-                String json =
-                        journalClient.getEncountersByPractitioner(practitionerId, null);
+                String json = journalClient.getEncountersByPractitioner(practitionerId, null, auth());
                 JsonNode arr = mapper.readTree(json);
 
                 if (arr == null || !arr.isArray()) {
@@ -158,15 +159,10 @@ public class MyRemoteService {
                     ids.add(e.path("patientId").asLong());
                 }
 
-                String patientsJson = journalClient.getAllPatients();
+                String patientsJson = journalClient.getAllPatients(auth());
                 JsonNode patientsArr = mapper.readTree(patientsJson);
 
-                if (patientsArr == null || !patientsArr.isArray()) {
-                    return List.<PatientDTO>of();
-                }
-
                 List<PatientDTO> out = new ArrayList<>();
-
                 for (JsonNode p : patientsArr) {
                     Long id = p.path("id").asLong();
                     if (ids.contains(id)) {
@@ -180,7 +176,6 @@ public class MyRemoteService {
                 }
 
                 return out;
-
             } catch (Exception e) {
                 LOG.error("searchPatientsByPractitioner failed", e);
                 return List.<PatientDTO>of();
@@ -189,14 +184,15 @@ public class MyRemoteService {
     }
 
     // ----------------------------
-    // PRACTITIONER ENCOUNTERS BY DATE
+    // ENCOUNTERS BY DATE
     // ----------------------------
     public Uni<String> getEncountersForPractitionerOnDate(Long id, LocalDate date) {
         return Uni.createFrom().item(() -> {
             try {
                 return journalClient.getEncountersByPractitioner(
                         id,
-                        date == null ? null : date.toString()
+                        date == null ? null : date.toString(),
+                        auth()
                 );
             } catch (Exception e) {
                 LOG.error("getEncountersForPractitionerOnDate failed", e);

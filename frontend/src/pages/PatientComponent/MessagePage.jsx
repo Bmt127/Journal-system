@@ -16,21 +16,22 @@ import "./MessagePage.css";
 export default function MessagePage() {
     const [conversation, setConversation] = useState([]);
     const [users, setUsers] = useState([]);
-    const [selectedUserId, setSelectedUserId] = useState("");
+    const [selectedUser, setSelectedUser] = useState(null);
     const [content, setContent] = useState("");
     const [error, setError] = useState(null);
 
-    const userId = Number(localStorage.getItem("userId"));
     const messagesEndRef = useRef(null);
 
-    // Hämta alla användare (för dropdown)
+    /* ----------------------------------
+       Load users from user-service
+    -----------------------------------*/
     useEffect(() => {
         const loadUsers = async () => {
             try {
                 const res = await userApi.get("/users");
                 setUsers(res.data);
             } catch (err) {
-                console.error("Kunde inte hämta användare", err);
+                console.error("Failed to load users", err);
                 setError("Kunde inte hämta användare");
             }
         };
@@ -38,71 +39,61 @@ export default function MessagePage() {
         loadUsers();
     }, []);
 
-    // Laddar konversationen (både skickade och mottagna)
-    const loadConversation = useCallback(async (otherId) => {
-        if (!otherId) {
+    /* ----------------------------------
+       Load conversation with selected user
+    -----------------------------------*/
+    const loadConversation = useCallback(async (otherKeycloakId) => {
+        if (!otherKeycloakId) {
             setConversation([]);
             return;
         }
 
         try {
-            // Hämta både skickade och mottagna meddelanden för denna användare
-            const [sentRes, recvRes] = await Promise.all([
-                messageApi.get(`/messages/sender/${userId}`),
-                messageApi.get(`/messages/receiver/${userId}`)
-            ]);
-
-            const combined = [...(sentRes.data || []), ...(recvRes.data || [])];
-
-            // Filtrera ut endast meddelanden som rör selected user (antingen sender eller receiver)
-            const conv = combined
-                .filter(m =>
-                    Number(m.senderId) === Number(otherId) ||
-                    Number(m.receiverId) === Number(otherId)
-                )
-                .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-            setConversation(conv);
+            const res = await messageApi.get(`/messages/me/conversation/${otherKeycloakId}`);
+            setConversation(res.data || []);
         } catch (err) {
-            console.error("Kunde inte ladda konversation", err);
+            console.error("Failed to load conversation", err);
             setError("Kunde inte ladda konversation");
         }
-    }, [userId]);
+    }, []);
 
-    // Kör när selectedUserId byter
     useEffect(() => {
-        if (!selectedUserId) return;
-        loadConversation(selectedUserId);
-    }, [selectedUserId, loadConversation]);
+        if (!selectedUser) return;
+        loadConversation(selectedUser.keycloakId);
+    }, [selectedUser, loadConversation]);
 
-    // Scrolla till botten när conversation uppdateras
+    /* ----------------------------------
+       Auto scroll to bottom
+    -----------------------------------*/
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [conversation]);
 
+    /* ----------------------------------
+       Send message
+    -----------------------------------*/
     const handleSend = async () => {
-        if (!content.trim() || !selectedUserId) return;
+        if (!content.trim() || !selectedUser) return;
 
         try {
-            await messageApi.post("/messages", {
-                senderId: userId,
-                receiverId: Number(selectedUserId),
+            await messageApi.post("/messages/me", {
+                receiverKeycloakId: selectedUser.keycloakId,
                 content: content.trim()
             });
 
             setContent("");
-            // Ladda om konversation direkt efter sändning
-            await loadConversation(selectedUserId);
+            await loadConversation(selectedUser.keycloakId);
         } catch (err) {
-            console.error("Kunde inte skicka meddelande", err);
+            console.error("Failed to send message", err);
             setError("Kunde inte skicka meddelande");
         }
     };
 
-    // Hjälpfunktion för att visa vem som skickade meddelandet
-    const getSenderName = (senderId) => {
-        if (Number(senderId) === Number(userId)) return "Du";
-        const u = users.find(x => Number(x.id) === Number(senderId));
+    /* ----------------------------------
+       Resolve sender name
+    -----------------------------------*/
+    const getSenderName = (senderKeycloakId) => {
+        const u = users.find(x => x.keycloakId === senderKeycloakId);
         if (!u) return "Okänd";
         return `${u.username} (${u.role})`;
     };
@@ -113,37 +104,51 @@ export default function MessagePage() {
 
             {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
 
+            {/* -------------------------------
+                User selector
+            --------------------------------*/}
             <FormControl fullWidth size="small" sx={{ mb: 3 }}>
                 <InputLabel>Välj person</InputLabel>
                 <Select
-                    value={selectedUserId}
+                    value={selectedUser ? selectedUser.keycloakId : ""}
                     onChange={(e) => {
-                        // Säkerställ att vi sätter ett nummer (eller tom sträng vid deselect)
-                        const val = e.target.value;
-                        setSelectedUserId(val === "" ? "" : Number(val));
+                        const user = users.find(u => u.keycloakId === e.target.value);
+                        setSelectedUser(user);
                     }}
                 >
                     {users
-                        .filter(u => Number(u.id) !== Number(userId) && (u.role === "DOCTOR" || u.role === "STAFF"))
+                        .filter(u => u.role === "DOCTOR" || u.role === "STAFF")
                         .map(u => (
-                            <MenuItem key={u.id} value={u.id}>
+                            <MenuItem key={u.keycloakId} value={u.keycloakId}>
                                 {u.username} ({u.role})
                             </MenuItem>
                         ))}
                 </Select>
             </FormControl>
 
-            {selectedUserId && (
+            {/* -------------------------------
+                Conversation
+            --------------------------------*/}
+            {selectedUser && (
                 <>
                     <div className="message-list">
                         {conversation.length === 0 && (
-                            <Typography variant="body2" sx={{ mb: 1 }}>Ingen konversation än.</Typography>
+                            <Typography variant="body2" sx={{ mb: 1 }}>
+                                Ingen konversation än.
+                            </Typography>
                         )}
 
                         {conversation.map(m => (
-                            <Paper key={m.id} className={`message-item ${Number(m.senderId) === Number(userId) ? "sent" : "received"}`}>
+                            <Paper
+                                key={m.id}
+                                className={`message-item ${
+                                    m.senderKeycloakId === selectedUser.keycloakId
+                                        ? "received"
+                                        : "sent"
+                                }`}
+                            >
                                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                                    {getSenderName(m.senderId)}:
+                                    {getSenderName(m.senderKeycloakId)}
                                 </Typography>
                                 <Typography>{m.content}</Typography>
                                 <Typography variant="caption" sx={{ display: "block", mt: 0.5 }}>
@@ -151,9 +156,13 @@ export default function MessagePage() {
                                 </Typography>
                             </Paper>
                         ))}
+
                         <div ref={messagesEndRef} />
                     </div>
 
+                    {/* -------------------------------
+                        Input
+                    --------------------------------*/}
                     <Paper sx={{ p: 2, mt: 2 }}>
                         <TextareaAutosize
                             minRows={3}
@@ -162,7 +171,11 @@ export default function MessagePage() {
                             onChange={(e) => setContent(e.target.value)}
                             className="message-input"
                         />
-                        <Button variant="contained" onClick={handleSend} sx={{ mt: 1 }}>
+                        <Button
+                            variant="contained"
+                            onClick={handleSend}
+                            sx={{ mt: 1 }}
+                        >
                             Skicka
                         </Button>
                     </Paper>

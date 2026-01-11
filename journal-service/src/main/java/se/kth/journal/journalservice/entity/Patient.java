@@ -2,6 +2,7 @@ package se.kth.journal.journalservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 @Entity
 @Table(name = "patients")
 @Data
@@ -14,19 +15,12 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    @Column(nullable = false, unique = true)
+    private String keycloakId;   // token.sub
 
     private String username;
     private String email;
 
     private String firstName;
     private String lastName;
-
-    public Patient(String email, Long userId, String username, String firstName, String lastName) {
-        this.email = email;
-        this.userId = userId;
-        this.username = username;
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
 }

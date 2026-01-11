@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Tabs, Tab } from "@mui/material";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
 
-export default function PatientDashboard() {
+export default function PatientDashboard({keycloak}) {
     const [value, setValue] = useState(0);
     const navigate = useNavigate();
     const location = useLocation();
@@ -32,10 +32,10 @@ export default function PatientDashboard() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("userId");
-        localStorage.removeItem("role");
-        navigate("/login");
-    };
+        keycloak.logout({
+            redirectUri: window.location.origin
+        });
+    }
 
     return (
         <div>

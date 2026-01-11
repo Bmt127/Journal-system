@@ -1,5 +1,4 @@
 services:
-
   mysql:
     image: mysql:8
     container_name: journal-mysql
@@ -16,18 +15,60 @@ services:
       timeout: 3s
       retries: 20
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    command: start-dev
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_HTTP_ENABLED=true
+      - KC_HOSTNAME_STRICT=false
+    ports:
+      - "8180:8080"
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import
+      - keycloak_data:/opt/keycloak/data
+
   user-service:
     build: ./user-service
     container_name: user-service
     depends_on:
       mysql:
         condition: service_healthy
+      keycloak:
+        condition: service_started
+    extra_hosts:
+      - "localhost:host-gateway"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/journal_users
+      # Fixad databas-URL (journal-mysql istället för mysql)
+      SPRING_DATASOURCE_URL: jdbc:mysql://journal-mysql:3306/journal_users
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://localhost:8180/realms/journal
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/journal/protocol/openid-connect/certs
     ports:
       - "8081:8081"
+
+  journal-service:
+    build: ./journal-service
+    container_name: journal-service
+    depends_on:
+      mysql:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+    extra_hosts:
+      - "localhost:host-gateway"
+    environment:
+      # Fixad databas-URL
+      SPRING_DATASOURCE_URL: jdbc:mysql://journal-mysql:3306/journaldb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://localhost:8180/realms/journal
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/journal/protocol/openid-connect/certs
+    ports:
+      - "8084:8084"
 
   message-service:
     build: ./message-service
@@ -36,37 +77,27 @@ services:
       mysql:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/messagedb
+      SPRING_DATASOURCE_URL: jdbc:mysql://journal-mysql:3306/messagedb
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
     ports:
-      - "8083:8083"
-
-  journal-service:
-    build: ./journal-service
-    container_name: journal-service
-    depends_on:
-      mysql:
-        condition: service_healthy
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/journaldb
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
-    ports:
-      - "8084:8084"
+      - "8083:8080"
 
   search-service:
     build: ./search-service
     container_name: search-service
     ports:
       - "8082:8082"
+    environment:
+      - QUARKUS_HTTP_HOST=0.0.0.0
+      - QUARKUS_HTTP_PORT=8082
+
 
   image-service:
     build: ./image-service
     container_name: image-service
     ports:
       - "3001:3001"
-
 
   frontend:
     build: ./frontend
@@ -77,5 +108,9 @@ services:
       - message-service
       - image-service
       - search-service
+      - keycloak
     ports:
-      - "5173:5173"
+      - "5173:80"
+
+volumes:
+  keycloak_data:

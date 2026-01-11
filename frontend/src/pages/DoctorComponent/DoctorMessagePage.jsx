@@ -16,79 +16,86 @@ import "./MessagePage.css";
 export default function DoctorMessagePage() {
     const [conversation, setConversation] = useState([]);
     const [users, setUsers] = useState([]);
-    const [selectedUserId, setSelectedUserId] = useState("");
+    const [selectedUser, setSelectedUser] = useState(null);
     const [content, setContent] = useState("");
+    const [error, setError] = useState(null);
 
-    const userId = Number(localStorage.getItem("userId"));
-    const endRef = useRef(null);
+    const messagesEndRef = useRef(null);
 
-    // Load all users
+    /* ----------------------------------
+       Load users from user-service
+    -----------------------------------*/
     useEffect(() => {
-        userApi.get("/users")
-            .then(res => setUsers(res.data))
-            .catch(err => console.error("Kunde inte hämta användare:", err));
+        const loadUsers = async () => {
+            try {
+                const res = await userApi.get("/users");
+                setUsers(res.data);
+            } catch (err) {
+                console.error("Failed to load users", err);
+                setError("Kunde inte hämta användare");
+            }
+        };
+
+        loadUsers();
     }, []);
 
-    // Unified conversation loader
-    const loadConversation = useCallback(async (otherUserId) => {
-        if (!otherUserId) {
+    /* ----------------------------------
+       Load conversation
+    -----------------------------------*/
+    const loadConversation = useCallback(async (otherKeycloakId) => {
+        if (!otherKeycloakId) {
             setConversation([]);
             return;
         }
 
         try {
-            const [sent, received] = await Promise.all([
-                messageApi.get(`/messages/sender/${userId}`),
-                messageApi.get(`/messages/receiver/${userId}`)
-            ]);
-
-            const all = [...sent.data, ...received.data]
-                .filter(m =>
-                    Number(m.senderId) === Number(otherUserId) ||
-                    Number(m.receiverId) === Number(otherUserId)
-                )
-                .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-            setConversation(all);
-
-        } catch (e) {
-            console.error("Kunde inte hämta konversation:", e);
-            setConversation([]);
+            const res = await messageApi.get(`/messages/me/conversation/${otherKeycloakId}`);
+            setConversation(res.data || []);
+        } catch (err) {
+            console.error("Failed to load conversation", err);
+            setError("Kunde inte ladda konversation");
         }
-    }, [userId]);
+    }, []);
 
-    // Load conversation when user changes
     useEffect(() => {
-        loadConversation(selectedUserId);
-    }, [selectedUserId, loadConversation]);
+        if (!selectedUser) return;
+        loadConversation(selectedUser.keycloakId);
+    }, [selectedUser, loadConversation]);
 
-    // Auto-scroll
+    /* ----------------------------------
+       Auto scroll
+    -----------------------------------*/
     useEffect(() => {
-        endRef.current?.scrollIntoView({ behavior: "smooth" });
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [conversation]);
 
+    /* ----------------------------------
+       Send message
+    -----------------------------------*/
     const handleSend = async () => {
-        if (!content.trim() || !selectedUserId) return;
+        if (!content.trim() || !selectedUser) return;
 
         try {
-            await messageApi.post("/messages", {
-                senderId: userId,
-                receiverId: Number(selectedUserId),
-                content: content.trim() // FIXED
+            await messageApi.post("/messages/me", {
+                receiverKeycloakId: selectedUser.keycloakId,
+                content: content.trim()
             });
 
             setContent("");
-            await loadConversation(selectedUserId);
-
+            await loadConversation(selectedUser.keycloakId);
         } catch (err) {
-            console.error("Kunde inte skicka meddelande:", err);
-            alert("Kunde inte skicka meddelande.");
+            console.error("Failed to send message", err);
+            setError("Kunde inte skicka meddelande");
         }
     };
 
-    const getName = (id) => {
-        const u = users.find(u => Number(u.id) === Number(id));
-        return u ? `${u.username} (${u.role})` : "Okänd användare";
+    /* ----------------------------------
+       Resolve sender name
+    -----------------------------------*/
+    const getSenderName = (senderKeycloakId) => {
+        const u = users.find(x => x.keycloakId === senderKeycloakId);
+        if (!u) return "Okänd";
+        return `${u.username} (${u.role})`;
     };
 
     return (
@@ -97,54 +104,57 @@ export default function DoctorMessagePage() {
                 Meddelanden
             </Typography>
 
+            {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
+
+            {/* User selector */}
             <FormControl fullWidth size="small" sx={{ mb: 3 }}>
-                <InputLabel>Välj person</InputLabel>
+                <InputLabel>Välj patient eller personal</InputLabel>
                 <Select
-                    value={selectedUserId}
-                    onChange={(e) => setSelectedUserId(Number(e.target.value))}
+                    value={selectedUser ? selectedUser.keycloakId : ""}
+                    onChange={(e) => {
+                        const user = users.find(u => u.keycloakId === e.target.value);
+                        setSelectedUser(user);
+                    }}
                 >
                     {users
-                        .filter(u => u.id !== userId)
+                        .filter(u => u.role === "PATIENT" || u.role === "STAFF")
                         .map(u => (
-                            <MenuItem key={u.id} value={u.id}>
+                            <MenuItem key={u.keycloakId} value={u.keycloakId}>
                                 {u.username} ({u.role})
                             </MenuItem>
                         ))}
                 </Select>
             </FormControl>
 
-            {selectedUserId ? (
+            {selectedUser && (
                 <>
                     <div className="message-list">
                         {conversation.length === 0 && (
-                            <Typography>Ingen konversation ännu</Typography>
+                            <Typography variant="body2">Ingen konversation än.</Typography>
                         )}
 
-                        {conversation.map((m) => (
+                        {conversation.map(m => (
                             <Paper
                                 key={m.id}
                                 className={`message-item ${
-                                    Number(m.senderId) === userId ? "sent" : "received"
+                                    m.senderKeycloakId === selectedUser.keycloakId
+                                        ? "received"
+                                        : "sent"
                                 }`}
                             >
                                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                                    {Number(m.senderId) === userId ? "Du" : getName(m.senderId)}:
+                                    {getSenderName(m.senderKeycloakId)}
                                 </Typography>
 
                                 <Typography>{m.content}</Typography>
 
-                                <Typography
-                                    variant="caption"
-                                    sx={{ mt: 1, display: "block" }}
-                                >
-                                    {m.timestamp
-                                        ? new Date(m.timestamp).toLocaleString()
-                                        : ""}
+                                <Typography variant="caption" sx={{ display: "block", mt: 0.5 }}>
+                                    {new Date(m.timestamp).toLocaleString()}
                                 </Typography>
                             </Paper>
                         ))}
 
-                        <div ref={endRef} />
+                        <div ref={messagesEndRef} />
                     </div>
 
                     <Paper sx={{ p: 2, mt: 2 }}>
@@ -160,8 +170,6 @@ export default function DoctorMessagePage() {
                         </Button>
                     </Paper>
                 </>
-            ) : (
-                <Typography>Välj en person för att se konversationen</Typography>
             )}
         </div>
     );

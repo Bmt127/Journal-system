@@ -1,47 +1,66 @@
 import { useState } from "react";
-import axios from "axios";
+import { imageApi } from "../../api/imageApi";
 import "./ImageComponent.css";
-
-const api = axios.create({
-    baseURL: "http://localhost:3001"
-});
 
 export default function ImageComponent() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploadedFilename, setUploadedFilename] = useState("");
     const [editText, setEditText] = useState("");
     const [editedFilename, setEditedFilename] = useState("");
+    const [loading, setLoading] = useState(false);
 
     async function handleUpload() {
-        if (!selectedFile) return alert("Välj en bild först");
+        if (!selectedFile) {
+            alert("Välj en bild först");
+            return;
+        }
 
         const formData = new FormData();
         formData.append("image", selectedFile);
 
         try {
-            const response = await api.post("/upload", formData);
-            setUploadedFilename(response.data.filename);
+            setLoading(true);
+
+            const res = await imageApi.post("/upload", formData, {
+                headers: { "Content-Type": "multipart/form-data" }
+            });
+
+            setUploadedFilename(res.data.filename);
             setEditedFilename("");
+            setEditText("");
         } catch (err) {
             console.error(err);
             alert("Kunde inte ladda upp bild");
+        } finally {
+            setLoading(false);
         }
     }
 
     async function handleEdit() {
-        if (!uploadedFilename) return alert("Ingen bild uppladdad");
-        if (!editText.trim()) return alert("Ingen text angiven");
+        if (!uploadedFilename) {
+            alert("Ingen bild uppladdad");
+            return;
+        }
+
+        if (!editText.trim()) {
+            alert("Ange text");
+            return;
+        }
 
         try {
-            const response = await api.post("/edit", {
+            setLoading(true);
+
+            const res = await imageApi.post("/edit", {
                 filename: uploadedFilename,
                 text: editText
             });
 
-            setEditedFilename(response.data.edited);
+            setEditedFilename(res.data.edited);
         } catch (err) {
             console.error(err);
             alert("Gick inte att redigera bilden");
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -55,14 +74,16 @@ export default function ImageComponent() {
                     accept="image/*"
                     onChange={(e) => setSelectedFile(e.target.files[0])}
                 />
-                <button onClick={handleUpload}>Ladda upp bild</button>
+                <button onClick={handleUpload} disabled={loading}>
+                    {loading ? "Laddar..." : "Ladda upp bild"}
+                </button>
             </div>
 
             {uploadedFilename && (
                 <div className="preview-section">
                     <h3>Uppladdad bild</h3>
                     <img
-                        src={`http://localhost:3001/image/${uploadedFilename}`}
+                        src={`/image-api/image/${uploadedFilename}`}
                         alt="uploaded"
                         className="preview-image"
                     />
@@ -77,16 +98,17 @@ export default function ImageComponent() {
                         value={editText}
                         onChange={(e) => setEditText(e.target.value)}
                     />
-                    <button onClick={handleEdit}>Lägg till text</button>
+                    <button onClick={handleEdit} disabled={loading}>
+                        {loading ? "Bearbetar..." : "Lägg till text"}
+                    </button>
                 </div>
             )}
 
             {editedFilename && (
                 <div className="preview-section">
                     <h3>Redigerad bild</h3>
-
                     <img
-                        src={`http://localhost:3001/edit-image/${editedFilename}`}
+                        src={`/image-api/edit-image/${editedFilename}`}
                         alt="edited"
                         className="preview-image"
                     />

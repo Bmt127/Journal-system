@@ -21,23 +21,28 @@ export default function PatientSearch() {
         setResults([]);
 
         try {
-            const res = await searchApi.get(`/search/patients?query=${encodeURIComponent(query)}`);
+            const params = {};
 
-            // Om backend returnerar ett objekt (ej array) -> supporta det defensivt
-            const data = Array.isArray(res.data) ? res.data : (res.data ? [res.data] : []);
+            // Om användaren skriver "diag:diabetes" → sök på condition
+            if (query.toLowerCase().startsWith("diag:")) {
+                params.condition = query.substring(5).trim();
+            } else {
+                params.query = query;
+            }
 
-            // KORREKT MAPPNING MOT BACKEND (DTO med firstName,lastName,email)
+            const res = await searchApi.get("/search/patients", { params });
+
+            const data = Array.isArray(res.data) ? res.data : [];
+
             const mapped = data.map(p => ({
                 id: p.id,
-                givenName: p.firstName || p.username || "",
+                givenName: p.firstName || "",
                 familyName: p.lastName || "",
                 email: p.email || ""
             }));
 
             if (mapped.length === 0) {
                 setError("Inga träffar.");
-            } else {
-                setError("");
             }
 
             setResults(mapped);
@@ -52,14 +57,20 @@ export default function PatientSearch() {
 
     return (
         <div className="search-container">
-            <Typography variant="h5" sx={{ mb: 2 }}>Sök patienter</Typography>
+            <Typography variant="h5" sx={{ mb: 2 }}>
+                Sök patienter
+            </Typography>
 
-            <div className="search-bar" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+                Tips: skriv <b>diag:diabetes</b> för att söka på diagnos
+            </Typography>
+
+            <div className="search-bar" style={{ display: "flex", gap: 8 }}>
                 <TextField
                     label="Namn eller diagnos"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                     fullWidth
                 />
                 <Button variant="contained" onClick={handleSearch} disabled={loading}>
@@ -67,16 +78,16 @@ export default function PatientSearch() {
                 </Button>
             </div>
 
-            {error && <p style={{ color: "red", marginTop: 12 }}>{error}</p>}
+            {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>}
 
             <div style={{ marginTop: 12, display: "grid", gap: 12 }}>
-                {results.map((p) => (
-                    <Paper key={p.id} className="search-result-card" sx={{ padding: 2 }}>
+                {results.map(p => (
+                    <Paper key={p.id} sx={{ padding: 2 }}>
                         <Typography variant="h6">
                             {p.givenName} {p.familyName}
                         </Typography>
-                        <Typography><strong>ID:</strong> {p.id}</Typography>
-                        <Typography><strong>Email:</strong> {p.email}</Typography>
+                        <Typography>ID: {p.id}</Typography>
+                        <Typography>Email: {p.email}</Typography>
                     </Paper>
                 ))}
             </div>

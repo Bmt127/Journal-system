@@ -5,7 +5,48 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5af4467c-128c-45d6-b701-b164fa3efa4c" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/frontend/src/api/axiosConfig.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/auth/RoleRoute.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/auth/keycloak.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/imageApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/imageApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/journalApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/journalApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/messageApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/messageApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/searchApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/searchApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/userApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/userApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/main.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/main.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DoctorComponent/DoctorMessagePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DoctorComponent/DoctorMessagePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DoctorComponent/DoctorProfilePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DoctorComponent/DoctorProfilePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DoctorComponent/PatientList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DoctorComponent/PatientList.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DoctorDashBoard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DoctorDashBoard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/ImageComponent/ImageComponent.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/ImageComponent/ImageComponent.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/LoginPage.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PatientComponent/ConditionPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PatientComponent/ConditionPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PatientComponent/MessagePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PatientComponent/MessagePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PatientComponent/ObservationPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PatientComponent/ObservationPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PatientComponent/ProfilePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PatientComponent/ProfilePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PatientDashBoard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PatientDashBoard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/SearchComponent/PatientSearch.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/SearchComponent/PatientSearch.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/SearchComponent/PractitionerSearch.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/SearchComponent/PractitionerSearch.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/StaffComponent/StaffMessages.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/StaffComponent/StaffMessages.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/StaffComponent/StaffPatientList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/StaffComponent/StaffPatientList.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/StaffDashBoard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/StaffDashBoard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/logout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/logout.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-service/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-service/server.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mysql/init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/mysql/init.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/search-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/MyRemoteService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/controller/PatientSearchController.java" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/controller/PatientSearchController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/dto/PatientDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/dto/PatientDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/dto/PractitionerDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/dto/PractitionerDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/service/JournalClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/service/JournalClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/service/MyRemoteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/src/main/java/se/kth/journal/search/service/MyRemoteService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/search-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/search-service/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -22,8 +63,8 @@
         <option value="package-info" />
         <option value="CSS File" />
         <option value="JSX File" />
-        <option value="Class" />
         <option value="JavaScript File" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -61,32 +102,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/a3/Documents/Journal-system&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15527344&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.48735633&quot;,
-    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.tools&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/a3/Applications/IntelliJ IDEA Ultimate.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Downloaded.Files.Path.Enabled": "false",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/a3/Documents/Journal-system",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15527344",
+    "project.structure.side.proportion": "0.48735633",
+    "run.configurations.included.in.services": "true",
+    "settings.editor.selected.configurable": "reference.settings.project.maven.repository.indices",
+    "ts.external.directory.path": "/Users/a3/Applications/IntelliJ IDEA Ultimate.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/frontend/src/pages" />
@@ -199,6 +240,7 @@
       <workItem from="1767305257298" duration="6968000" />
       <workItem from="1767390296359" duration="5533000" />
       <workItem from="1767614044196" duration="2354000" />
+      <workItem from="1768083573253" duration="28659000" />
     </task>
     <servers />
   </component>
@@ -212,6 +254,11 @@
           <url>file://$PROJECT_DIR$/frontend/src/App.jsx</url>
           <line>4</line>
           <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/frontend/src/pages/DoctorComponent/PatientList.jsx</url>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

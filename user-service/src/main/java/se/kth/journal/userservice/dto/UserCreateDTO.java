@@ -5,12 +5,11 @@ import lombok.Data;
 @Data
 public class UserCreateDTO {
 
+    private String keycloakId;   // REQUIRED
     private String username;
     private String email;
-    private String password;
     private String role;
 
-    // FIX
     private String firstName;
     private String lastName;
 }

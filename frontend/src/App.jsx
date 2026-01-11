@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import LoginPage from "./pages/LoginPage";
+import RoleRoute from "./auth/RoleRoute";
 
 // Patient
 import PatientDashboard from "./pages/PatientDashBoard";
@@ -23,53 +23,85 @@ import StaffMessages from "./pages/StaffComponent/StaffMessages";
 import PatientSearch from "./pages/SearchComponent/PatientSearch";
 import PractitionerSearch from "./pages/SearchComponent/PractitionerSearch";
 
-// Image handling page
+// Image
 import ImageComponent from "./pages/ImageComponent/ImageComponent";
 
-function App() {
+function App({ keycloak }) {
+    // Hämta rollerna från Keycloak-token (standardplatsen för realm-roller)
+    const roles = keycloak.tokenParsed?.realm_access?.roles || [];
+
+    const getStartRoute = () => {
+        // Ändrat till stora bokstäver för att matcha Keycloak
+        if (roles.includes("DOCTOR")) return "/doctor";
+        if (roles.includes("STAFF")) return "/staff";
+        return "/patient";
+    };
+
     return (
         <Router>
             <Routes>
 
-                {/* Login */}
-                <Route path="/" element={<LoginPage />} />
-                <Route path="/login" element={<LoginPage />} />
+                {/* Start route efter Keycloak-login */}
+                <Route path="/" element={<Navigate to={getStartRoute()} />} />
 
-                {/* Patient */}
-                <Route path="/patient" element={<PatientDashboard />}>
+                {/* ================= PATIENT ================= */}
+                <Route
+                    path="/patient"
+                    element={
+                        /* Ändrat till stora bokstäver för att RoleRoute ska släppa igenom dig */
+                        <RoleRoute allowedRoles={["PATIENT"]} userRoles={roles}>
+                            <PatientDashboard keycloak={keycloak} />
+                        </RoleRoute>
+                    }
+                >
                     <Route index element={<Navigate to="profile" />} />
                     <Route path="profile" element={<ProfilePage />} />
                     <Route path="observations" element={<ObservationPage />} />
                     <Route path="conditions" element={<ConditionPage />} />
                     <Route path="messages" element={<MessagePage />} />
-
-                    {/* Patient: image handling */}
                     <Route path="images" element={<ImageComponent />} />
                 </Route>
 
-                {/* Staff */}
-                <Route path="/staff" element={<StaffDashboard />}>
+                {/* ================= STAFF ================= */}
+                <Route
+                    path="/staff"
+                    element={
+                        <RoleRoute allowedRoles={["STAFF"]} userRoles={roles}>
+                            <StaffDashboard keycloak={keycloak} />
+                        </RoleRoute>
+                    }
+                >
                     <Route index element={<Navigate to="patients" />} />
                     <Route path="patients" element={<StaffPatientList />} />
                     <Route path="messages" element={<StaffMessages />} />
                     <Route path="search/patients" element={<PatientSearch />} />
                     <Route path="search/practitioners" element={<PractitionerSearch />} />
-
-                    {/* Staff: image handling */}
                     <Route path="images" element={<ImageComponent />} />
                 </Route>
 
-                {/* Doctor */}
-                <Route path="/doctor" element={<DoctorDashboard />}>
+                {/* ================= DOCTOR ================= */}
+                <Route
+                    path="/doctor"
+                    element={
+                        <RoleRoute allowedRoles={["DOCTOR"]} userRoles={roles}>
+                            <DoctorDashboard keycloak={keycloak} />
+                        </RoleRoute>
+                    }
+                >
                     <Route index element={<Navigate to="profile" />} />
                     <Route path="profile" element={<DoctorProfilePage />} />
+
+                    {/* Dropdown med alla patienter */}
                     <Route path="patients" element={<PatientList />} />
+
                     <Route path="messages" element={<DoctorMessagePage />} />
                     <Route path="search" element={<PatientSearch />} />
-
-                    {/* Doctor: image handling */}
                     <Route path="images" element={<ImageComponent />} />
                 </Route>
+
+
+                {/* Fallback vid felaktig URL */}
+                <Route path="*" element={<Navigate to="/" />} />
 
             </Routes>
         </Router>

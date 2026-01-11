@@ -1,63 +1,40 @@
-// src/api/api.js
 import { userApi } from "./userApi";
 import { journalApi } from "./journalApi";
 import { messageApi } from "./messageApi";
 import { searchApi } from "./searchApi";
 import { imageApi, uploadImage } from "./imageApi";
 
-function strip(url) {
-
-
-    // removes the leading slash so axios doesn't double it
-    return url.startsWith("/") ? url.substring(1) : url;
-}
+// Vi tar bort det inledande snedstrecket om det finns,
+// eftersom baseURL slutar på /
+const strip = url => url.startsWith("/") ? url.substring(1) : url;
 
 const api = {
-
-    // ---------------- GET ----------------
     get: (url) => {
-        if (url.startsWith("/users"))
-            return userApi.get(strip(url));
-
-        if (url.startsWith("/messages"))
-            return messageApi.get(strip(url));
-
-        if (url.startsWith("/patients") || url.startsWith("/conditions") || url.startsWith("/encounters"))
-            return journalApi.get(strip(url));
-
-        if (url.startsWith("/search"))
-            return searchApi.get(strip(url));
-
-        if (url.startsWith("/images"))
-            return imageApi.get(strip(url));
-
+        const path = strip(url);
+        if (path.startsWith("users")) return userApi.get(path);
+        if (path.startsWith("messages")) return messageApi.get(path);
+        if (path.startsWith("patients") ||
+            path.startsWith("conditions") ||
+            path.startsWith("encounters") ||
+            path.startsWith("observations")) return journalApi.get(path);
+        if (path.startsWith("search")) return searchApi.get(path);
+        if (path.startsWith("images")) return imageApi.get(path);
         return Promise.reject("Unknown GET endpoint: " + url);
     },
 
-    // ---------------- POST ----------------
     post: (url, data) => {
-
-        if (url.startsWith("/users"))
-            return userApi.post(strip(url), data);
-
-        if (url.startsWith("/messages"))
-            return messageApi.post(strip(url), data);
-
-        if (url.startsWith("/patients") ||
-            url.startsWith("/conditions") ||
-            url.startsWith("/encounters"))
-            return journalApi.post(strip(url), data);
-
-        if (url.startsWith("/search"))
-            return searchApi.post(strip(url), data);
-
-        // IMAGE SPECIAL CASE (file upload)
-        if (url.startsWith("/images")) {
-            if (data instanceof FormData)
-                return uploadImage(data); // correct upload handler
-            return imageApi.post(strip(url), data);
+        const path = strip(url);
+        if (path.startsWith("users")) return userApi.post(path, data);
+        if (path.startsWith("messages")) return messageApi.post(path, data);
+        if (path.startsWith("patients") ||
+            path.startsWith("conditions") ||
+            path.startsWith("encounters") ||
+            path.startsWith("observations")) return journalApi.post(path, data);
+        if (path.startsWith("search")) return searchApi.post(path, data);
+        if (path.startsWith("images")) {
+            if (data instanceof FormData) return uploadImage(data);
+            return imageApi.post(path, data);
         }
-
         return Promise.reject("Unknown POST endpoint: " + url);
     }
 };

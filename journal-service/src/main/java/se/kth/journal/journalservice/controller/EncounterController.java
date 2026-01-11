@@ -1,5 +1,6 @@
 package se.kth.journal.journalservice.controller;
 
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,17 +14,21 @@ import java.util.Map;
 @RestController
 @RequestMapping("/encounters")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173")
 public class EncounterController {
 
     private final EncounterService service;
 
+    // Doctor / Staff
     @PostMapping
+    @RolesAllowed({ "DOCTOR", "STAFF" })
     public ResponseEntity<?> create(@RequestBody Encounter e) {
         return ResponseEntity.ok(service.create(e));
     }
 
+    // Doctor / Staff / Patient
     @GetMapping("/{id}")
+    @RolesAllowed({ "DOCTOR", "STAFF", "PATIENT" })
     public ResponseEntity<Object> get(@PathVariable Long id) {
         return service.get(id)
                 .<ResponseEntity<Object>>map(ResponseEntity::ok)
@@ -34,10 +39,9 @@ public class EncounterController {
                 );
     }
 
-    // ======================================================
-    // ✔ FIXED ENDPOINT SO IT MATCHES SEARCH-SERVICE EXPECTATION
-    // ======================================================
+    // Doctor / Staff (used by search-service)
     @GetMapping("/practitioner/{practitionerId}")
+    @RolesAllowed({ "DOCTOR", "STAFF" })
     public ResponseEntity<?> getByPractitioner(
             @PathVariable Long practitionerId,
             @RequestParam(required = false) String date
@@ -51,17 +55,23 @@ public class EncounterController {
         return ResponseEntity.ok(service.getByPractitioner(practitionerId));
     }
 
+    // Patient (egna) + Doctor + Staff
     @GetMapping("/patient/{patientId}")
+    @RolesAllowed({ "DOCTOR", "STAFF", "PATIENT" })
     public ResponseEntity<?> getByPatient(@PathVariable Long patientId) {
         return ResponseEntity.ok(service.getByPatient(patientId));
     }
 
+    // Staff only
     @GetMapping
+    @RolesAllowed({ "STAFF"})
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 
+    // Doctor / Staff
     @DeleteMapping("/{id}")
+    @RolesAllowed({ "DOCTOR", "STAFF" })
     public ResponseEntity<?> delete(@PathVariable Long id) {
         boolean removed = service.delete(id);
 

@@ -17,15 +17,16 @@ public class MessageService {
     private final MessageRepository repo;
 
     public List<MessageDTO> getAll() {
-        return repo.findAll().stream()
+        return repo.findAll()
+                .stream()
                 .map(MessageMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public MessageDTO create(MessageCreateDTO dto) {
+    public MessageDTO send(String senderKeycloakId, MessageCreateDTO dto) {
         Message m = Message.builder()
-                .senderId(dto.getSenderId())
-                .receiverId(dto.getReceiverId())
+                .senderKeycloakId(senderKeycloakId)
+                .receiverKeycloakId(dto.getReceiverKeycloakId())
                 .content(dto.getContent())
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -33,14 +34,26 @@ public class MessageService {
         return MessageMapper.toDTO(repo.save(m));
     }
 
-    public List<MessageDTO> getBySender(Long senderId) {
-        return repo.findBySenderId(senderId).stream()
+    public List<MessageDTO> getInbox(String keycloakId) {
+        return repo.findByReceiverKeycloakIdOrderByTimestampAsc(keycloakId)
+                .stream()
                 .map(MessageMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<MessageDTO> getByReceiver(Long receiverId) {
-        return repo.findByReceiverId(receiverId).stream()
+    public List<MessageDTO> getSent(String keycloakId) {
+        return repo.findBySenderKeycloakIdOrderByTimestampAsc(keycloakId)
+                .stream()
+                .map(MessageMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<MessageDTO> getConversation(String user1, String user2) {
+        return repo
+                .findBySenderKeycloakIdAndReceiverKeycloakIdOrReceiverKeycloakIdAndSenderKeycloakIdOrderByTimestampAsc(
+                        user1, user2, user1, user2
+                )
+                .stream()
                 .map(MessageMapper::toDTO)
                 .collect(Collectors.toList());
     }

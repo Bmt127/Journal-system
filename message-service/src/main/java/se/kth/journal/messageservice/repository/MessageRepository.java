@@ -7,7 +7,14 @@ import java.util.List;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-    List<Message> findBySenderId(Long senderId);
+    List<Message> findByReceiverKeycloakIdOrderByTimestampAsc(String receiverKeycloakId);
 
-    List<Message> findByReceiverId(Long receiverId);
+    List<Message> findBySenderKeycloakIdOrderByTimestampAsc(String senderKeycloakId);
+
+    List<Message> findBySenderKeycloakIdAndReceiverKeycloakIdOrReceiverKeycloakIdAndSenderKeycloakIdOrderByTimestampAsc(
+            String sender1,
+            String receiver1,
+            String sender2,
+            String receiver2
+    );
 }

@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class MessageCreateDTO {
-    private Long senderId;
-    private Long receiverId;
+    private String receiverKeycloakId;
     private String content;
 }

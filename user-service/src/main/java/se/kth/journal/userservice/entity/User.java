@@ -15,25 +15,20 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // === KEYCLOAK ===
+    @Column(name = "keycloak_id", nullable = false, unique = true)
+    private String keycloakId;
+
     private String email;
     private String username;
-    private String password;
-
-    @Column(name = "patient_id")
-    private String patientId;
-
-    @Column(name = "practitioner_id")
-    private String practitionerId; // NEW FIELD
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    // Custom constructor
-    public User(String email, String username, String password, Role role, String patientId) {
-        this.email = email;
-        this.username = username;
-        this.password = password;
-        this.role = role;
-        this.patientId = patientId;
-    }
+    // === JOURNAL-SERVICE KOPPLINGAR ===
+    @Column(name = "patient_id")
+    private String patientId;
+
+    @Column(name = "practitioner_id")
+    private String practitionerId;
 }

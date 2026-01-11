@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { journalApi } from "../../api/journalApi";
+import { userApi } from "../../api/userApi";
 import {
     Box, Typography, MenuItem, Select, FormControl, InputLabel,
     Paper, Button, TextField
@@ -7,6 +8,8 @@ import {
 import "./PatientList.css";
 
 export default function PatientList() {
+    const [user, setUser] = useState(null);
+
     const [patients, setPatients] = useState([]);
     const [selectedId, setSelectedId] = useState(null);
     const [selectedPatient, setSelectedPatient] = useState(null);
@@ -20,21 +23,41 @@ export default function PatientList() {
     const [severity, setSeverity] = useState("");
     const [onsetDate, setOnsetDate] = useState("");
 
-    // FETCH ALL PATIENTS
+    /* -------------------------
+       Load logged in doctor
+    ------------------------- */
     useEffect(() => {
-        journalApi.get("/patients")
-            .then(res => {
+        async function load() {
+            try {
+                const userRes = await userApi.get("/users/me");
+                const u = userRes.data;
+                setUser(u);
+
+                if (u.role !== "DOCTOR") {
+                    setError("Denna sida är endast för läkare");
+                    return;
+                }
+
+                const res = await journalApi.get("/patients");
                 const mapped = res.data.map(p => ({
                     id: p.id,
                     givenName: p.firstName || "",
                     familyName: p.lastName || ""
                 }));
                 setPatients(mapped);
-            })
-            .catch(() => setError("Kunde inte hämta patienter"));
+
+            } catch (err) {
+                console.error(err);
+                setError("Kunde inte ladda patienter");
+            }
+        }
+
+        load();
     }, []);
 
-    // FETCH SELECTED PATIENT
+    /* -------------------------
+       Load selected patient
+    ------------------------- */
     useEffect(() => {
         if (!selectedId) {
             setSelectedPatient(null);
@@ -44,39 +67,42 @@ export default function PatientList() {
         journalApi.get(`/patients/${selectedId}`)
             .then(res => {
                 const p = res.data;
-                const mapped = {
+                setSelectedPatient({
                     id: p.id,
                     givenName: p.firstName || "",
                     familyName: p.lastName || ""
-                };
-                setSelectedPatient(mapped);
+                });
             })
             .catch(() => setError("Kunde inte hämta patient"));
     }, [selectedId]);
 
-    // ADD NOTE
+    /* -------------------------
+       Add note
+    ------------------------- */
     const handleAddNote = async () => {
-        if (!note.trim()) return alert("Skriv en notering.");
-        if (!selectedId) return alert("Ingen patient vald.");
+        if (!note.trim()) return alert("Skriv en notering");
+        if (!selectedId) return alert("Ingen patient vald");
 
         try {
             await journalApi.post("/observations", {
                 patientId: selectedId,
                 note
             });
+
             setNote("");
             setShowNoteForm(false);
-            alert("Notering tillagd!");
-        } catch (err) {
-            console.error(err);
-            alert("Fel: Backend kanske saknar POST /observations");
+            alert("Notering tillagd");
+        } catch {
+            alert("Kunde inte spara notering");
         }
     };
 
-    // ADD CONDITION (MATCHAR BACKEND)
+    /* -------------------------
+       Add diagnosis
+    ------------------------- */
     const handleAddDiagnosis = async () => {
         if (!description || !severity || !onsetDate) {
-            alert("Fyll i alla obligatoriska fält.");
+            alert("Fyll i alla fält");
             return;
         }
 
@@ -85,25 +111,28 @@ export default function PatientList() {
                 patientId: selectedId,
                 diagnosis: description,
                 notes: severity,
-                onsetDate: onsetDate
+                onsetDate
             });
 
             setDescription("");
             setSeverity("");
             setOnsetDate("");
             setShowDiagnosisForm(false);
-            alert("Diagnos sparad!");
-        } catch (err) {
-            console.error(err);
-            alert("Fel: Backend kanske saknar POST /conditions");
+            alert("Diagnos sparad");
+        } catch {
+            alert("Kunde inte spara diagnos");
         }
     };
 
+    /* -------------------------
+       Render
+    ------------------------- */
+    if (error) return <p style={{ color: "red" }}>{error}</p>;
+    if (!user) return <p>Laddar...</p>;
+
     return (
         <Box className="patient-list-container">
-            <Typography className="patient-list-title">Patienter</Typography>
-
-            {error && <Typography color="error">{error}</Typography>}
+            <Typography className="patient-list-title">Mina patienter</Typography>
 
             <FormControl className="patient-list-dropdown">
                 <InputLabel>Välj patient</InputLabel>
@@ -134,7 +163,6 @@ export default function PatientList() {
                         </Button>
                     </Box>
 
-                    {/* NOTE FORM */}
                     {showNoteForm && (
                         <Box sx={{ mt: 2 }}>
                             <TextField
@@ -151,7 +179,6 @@ export default function PatientList() {
                         </Box>
                     )}
 
-                    {/* DIAGNOSIS FORM */}
                     {showDiagnosisForm && (
                         <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
                             <TextField
@@ -172,8 +199,8 @@ export default function PatientList() {
                                 onChange={(e) => setOnsetDate(e.target.value)}
                             />
 
-                            <Button sx={{ mt: 1 }} variant="contained" color="secondary" onClick={handleAddDiagnosis}>
-                                Spara diagnos
+                            <Button variant="contained" onClick={handleAddDiagnosis}>
+                                Spara
                             </Button>
                         </Box>
                     )}

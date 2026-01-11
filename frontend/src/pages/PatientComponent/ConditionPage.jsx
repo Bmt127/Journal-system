@@ -4,28 +4,16 @@ import { FormControl, Select, MenuItem, InputLabel } from "@mui/material";
 import "./ConditionPage.css";
 
 export default function ConditionPage() {
-    const [patient, setPatient] = useState(null);
     const [conditions, setConditions] = useState([]);
     const [selectedId, setSelectedId] = useState("");
     const [error, setError] = useState(null);
 
-    const userId = localStorage.getItem("userId");
-
-    // Hämta patient kopplad till user-account
+    // Hämta patientens egna diagnoser via Keycloak
     useEffect(() => {
-        journalApi.get(`/patients/by-user/${userId}`)
-            .then(res => setPatient(res.data))
-            .catch(() => setError("Kunde inte hämta patient"));
-    }, [userId]);
-
-    // Hämta conditions för patient
-    useEffect(() => {
-        if (!patient?.id) return;
-
-        journalApi.get(`/conditions/patient/${patient.id}`)
+        journalApi.get("/conditions/me")
             .then(res => setConditions(res.data))
             .catch(() => setError("Kunde inte hämta tillstånd"));
-    }, [patient]);
+    }, []);
 
     const selected = conditions.find(c => c.id === selectedId);
 
@@ -37,8 +25,11 @@ export default function ConditionPage() {
 
             <FormControl fullWidth className="condition-select">
                 <InputLabel>Välj tillstånd</InputLabel>
-                <Select value={selectedId} onChange={(e) => setSelectedId(e.target.value)}>
-                    {conditions.map((c) => (
+                <Select
+                    value={selectedId}
+                    onChange={(e) => setSelectedId(e.target.value)}
+                >
+                    {conditions.map(c => (
                         <MenuItem key={c.id} value={c.id}>
                             {c.diagnosis}
                         </MenuItem>
@@ -49,8 +40,13 @@ export default function ConditionPage() {
             {selected && (
                 <div className="condition-card">
                     <h3>{selected.diagnosis}</h3>
-                    <p><strong>Anteckningar:</strong> {selected.notes || "Inga anteckningar"}</p>
-                    <p><strong>Startdatum:</strong> {selected.onsetDate}</p>
+                    <p>
+                        <strong>Anteckningar:</strong>{" "}
+                        {selected.notes || "Inga anteckningar"}
+                    </p>
+                    <p>
+                        <strong>Startdatum:</strong> {selected.onsetDate}
+                    </p>
                 </div>
             )}
         </div>

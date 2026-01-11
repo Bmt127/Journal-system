@@ -13,24 +13,27 @@ public interface JournalClient {
 
     @GET
     @Path("/patients")
-    String getAllPatients();
+    String getAllPatients(@HeaderParam("Authorization") String auth);
 
     @GET
     @Path("/patients/{id}")
-    String getPatient(@PathParam("id") Long id);
+    String getPatient(@PathParam("id") Long id,
+                      @HeaderParam("Authorization") String auth);
 
     @GET
     @Path("/conditions/patient/{id}")
-    String getConditionsByPatient(@PathParam("id") Long patientId);
+    String getConditionsByPatient(@PathParam("id") Long patientId,
+                                  @HeaderParam("Authorization") String auth);
 
     @GET
     @Path("/practitioners")
-    String getAllPractitioners();
+    String getAllPractitioners(@HeaderParam("Authorization") String auth);
 
     @GET
     @Path("/encounters/practitioner/{id}")
     String getEncountersByPractitioner(
             @PathParam("id") Long practitionerId,
-            @QueryParam("date") String date
+            @QueryParam("date") String date,
+            @HeaderParam("Authorization") String auth
     );
 }

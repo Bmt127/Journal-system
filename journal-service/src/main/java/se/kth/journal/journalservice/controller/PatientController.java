@@ -1,7 +1,10 @@
 package se.kth.journal.journalservice.controller;
 
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import se.kth.journal.journalservice.entity.Patient;
 import se.kth.journal.journalservice.service.PatientService;
@@ -11,68 +14,54 @@ import java.util.Map;
 @RestController
 @RequestMapping("/patients")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173")
 public class PatientController {
 
     private final PatientService service;
 
+    @GetMapping("/me")
+    @RolesAllowed({ "PATIENT", "DOCTOR", "STAFF" })
+    public ResponseEntity<?> getMe(Authentication auth) {
+
+        Jwt jwt = (Jwt) auth.getPrincipal();
+        String keycloakId = jwt.getSubject();
+
+        return service.getByKeycloakId(keycloakId)
+                .<ResponseEntity<?>>map(p -> ResponseEntity.ok(p))
+                .orElseGet(() -> ResponseEntity.status(404)
+                        .body(Map.of("error", "No patient linked to this Keycloak user")));
+    }
+
+    @GetMapping("/{id}")
+    @RolesAllowed({ "DOCTOR", "STAFF", "PATIENT" })
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+
+        return service.getById(id)
+                .<ResponseEntity<?>>map(p -> ResponseEntity.ok(p))
+                .orElseGet(() -> ResponseEntity.status(404)
+                        .body(Map.of("error", "Patient not found")));
+    }
+
+
     @GetMapping
+    @RolesAllowed("STAFF")
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id) {
-        return service.getById(id)
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElse(ResponseEntity.status(404).body(Map.of("error", "Patient not found")));
-    }
-
-
-    @GetMapping("/by-user/{userId}")
-    public ResponseEntity<?> getByUserId(@PathVariable Long userId) {
-        return service.getByUserId(userId)
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElse(ResponseEntity.status(404).body(Map.of("error", "Patient not found")));
-    }
-
-
-    // ============================================================
-    // CREATE PATIENT (USED BY USER-SERVICE)
-    // ============================================================
+    // user-service → journal-service (machine to machine)
     @PostMapping
-    public ResponseEntity<?> createPatient(@RequestBody Map<String, Object> payload) {
+    @RolesAllowed("STAFF")
+    public ResponseEntity<?> create(@RequestBody Map<String, String> payload) {
 
-        try {
-            Long userId = Long.valueOf(payload.get("userId").toString());
-            String username = payload.getOrDefault("username", "").toString();
-            String email = payload.getOrDefault("email", "").toString();
+        Patient p = service.createPatient(
+                payload.get("keycloakId"),
+                payload.get("username"),
+                payload.get("email"),
+                payload.getOrDefault("firstName", ""),
+                payload.getOrDefault("lastName", "")
+        );
 
-            // Extract first/last name from username (important for SEARCH)
-            String[] parts = username.trim().split(" ");
-            String firstName = parts.length > 0 ? parts[0] : "";
-            String lastName = parts.length > 1 ? parts[1] : "";
-
-            Patient p = service.createPatient(
-                    userId,
-                    username,
-                    email,
-                    firstName,
-                    lastName
-            );
-
-            return ResponseEntity.ok(p);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        if (service.delete(id)) {
-            return ResponseEntity.ok(Map.of("status", "deleted"));
-        }
-        return ResponseEntity.status(404).body(Map.of("error", "Patient not found"));
+        return ResponseEntity.ok(p);
     }
 }

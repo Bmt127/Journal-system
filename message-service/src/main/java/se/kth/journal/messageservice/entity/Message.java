@@ -6,22 +6,28 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Table(name = "messages")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+
+
 public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long senderId;
-    private Long receiverId;
+    @Column(name = "sender_keycloak_id", nullable = false)
+    private String senderKeycloakId;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "receiver_keycloak_id", nullable = false)
+    private String receiverKeycloakId;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @Column(nullable = false)
     private LocalDateTime timestamp;
 }

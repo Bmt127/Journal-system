@@ -7,8 +7,8 @@ public class MessageMapper {
     public static MessageDTO toDTO(Message m) {
         return new MessageDTO(
                 m.getId(),
-                m.getSenderId(),
-                m.getReceiverId(),
+                m.getSenderKeycloakId(),
+                m.getReceiverKeycloakId(),
                 m.getContent(),
                 m.getTimestamp().toString()
         );

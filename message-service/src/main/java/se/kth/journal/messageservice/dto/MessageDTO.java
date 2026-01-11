@@ -7,8 +7,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class MessageDTO {
     private Long id;
-    private Long senderId;
-    private Long receiverId;
+    private String senderKeycloakId;
+    private String receiverKeycloakId;
     private String content;
     private String timestamp;
 }

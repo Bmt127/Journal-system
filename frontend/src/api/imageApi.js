@@ -1,14 +1,16 @@
 import axios from "axios";
+import { attachAuthInterceptor } from "./axiosConfig";
 
-const imageApi = axios.create({
-    baseURL: "http://localhost:30085"
+export const imageApi = axios.create({
+    baseURL: "/image-api"
 });
 
-// Upload handler (correct endpoint)
+attachAuthInterceptor(imageApi);
+
 export function uploadImage(formData) {
     return imageApi.post("/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
     });
 }
-
-export { imageApi };
