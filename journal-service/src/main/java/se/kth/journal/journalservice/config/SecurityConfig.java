@@ -37,10 +37,10 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
-                        // TILLFÄLLIG FIX: Tillåt /patients/me utan token för att testa databasanslutningen
-                        .requestMatchers("/patients/me").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/actuator/**").permitAll()  // Aktuator är offentlig
+                        .requestMatchers("/patients/me").permitAll()  // Tillåt /patients/me för testning
+                        .requestMatchers("/healthz").permitAll()  // Lägg till /healthz för hälsokontroll
+                        .anyRequest().authenticated()  // Alla andra vägar kräver autentisering
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
@@ -51,6 +51,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     @Bean
     public JwtDecoder jwtDecoder() {
