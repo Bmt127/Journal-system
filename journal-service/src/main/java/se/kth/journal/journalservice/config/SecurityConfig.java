@@ -30,41 +30,33 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // Konfigurera CORS
-                .csrf(csrf -> csrf.disable())  // Stänger av CSRF-skydd (passar bra för API:er)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // Ingen sessionshantering
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // Tillåt OPTIONS-metod för alla vägar
-                        .requestMatchers("/actuator/**").permitAll()  // Offentliga actuator endpoints
-                        .requestMatchers("/patients/me").permitAll()  // Offentlig endpoint för testning av patienter
-                        .requestMatchers("/healthz").permitAll()  // Offentlig hälsokontroll
-                        .anyRequest().authenticated()  // Alla andra vägar kräver autentisering
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/healthz").permitAll() // Molnets hälso-check
+                        .requestMatchers("/actuator/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter())  // Anpassa hur JWT-token konverteras
-                                .decoder(jwtDecoder())  // Dekodera JWT med JWK
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                                .decoder(jwtDecoder())
                         )
                 );
 
         return http.build();
     }
 
-    // Dekodera JWT-token med hjälp av JWK Set URI
     @Bean
     public JwtDecoder jwtDecoder() {
-        // Här använder vi en extern URL för JWK Set URI. Byt till rätt Keycloak-server URL.
-        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withJwkSetUri("https://keycloakk.app.cloud.cbh.kth.se/realms/journal/protocol/openid-connect/certs").build();
-
-        // För att tillåta tokenvalidering även om vi kör i Docker eller på olika nätverk
-        jwtDecoder.setJwtValidator(token -> org.springframework.security.oauth2.core.OAuth2TokenValidatorResult.success());
-
-        return jwtDecoder;
+        // Vi använder molnets URL för certifikatvalidering
+        return NimbusJwtDecoder.withJwkSetUri("https://keycloakk.app.cloud.cbh.kth.se/realms/journal/protocol/openid-connect/certs").build();
     }
 
-    // Konvertera JWT till rätt auktoriteter baserat på roller
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
@@ -87,16 +79,21 @@ public class SecurityConfig {
         return converter;
     }
 
-    // Konfigurera CORS för att tillåta förfrågningar från rätt ursprung
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));  // Lägg till din frontend-URL för utveckling
+
+        // Tillåt både lokal dev och kthcloud
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:5173",
+                "https://*.app.cloud.cbh.kth.se"
+        ));
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept"));
         config.setExposedHeaders(List.of("Authorization"));
         config.setAllowCredentials(true);
-        config.setMaxAge(3600L);  // CORS-förfrågningar kan cacheas under 1 timme
+        config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
