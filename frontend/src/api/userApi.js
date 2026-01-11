@@ -1,8 +1,6 @@
 import axios from "axios";
 import { attachAuthInterceptor } from "./axiosConfig";
-
 export const userApi = axios.create({
-    baseURL: "http://localhost:8081/"
+    baseURL: import.meta.env.VITE_USER_SERVICE_URL || "http://localhost:8081"
 });
-
 attachAuthInterceptor(userApi);
