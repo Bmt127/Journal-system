@@ -1,6 +1,9 @@
 import axios from "axios";
 import { attachAuthInterceptor } from "./axiosConfig";
+
 export const journalApi = axios.create({
-    baseURL: import.meta.env.VITE_JOURNAL_SERVICE_URL || "http://localhost:8084"
+    // Ändrad från localhost till molnets HTTPS-adress
+    baseURL: "https://journal-services.app.cloud.cbh.kth.se"
 });
+
 attachAuthInterceptor(journalApi);
