@@ -15,6 +15,8 @@ WORKDIR /app
 
 COPY --from=build /workspace/target/quarkus-app/ ./
 
-EXPOSE 8080
+# Tvinga Quarkus att lyssna på 8082
+ENV QUARKUS_HTTP_PORT=8082
+EXPOSE 8082
 
 ENTRYPOINT ["java", "-jar", "quarkus-run.jar"]
